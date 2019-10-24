@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import kotlinx.android.synthetic.main.item_audiobook.view.*
@@ -30,11 +31,12 @@ class AudioBookAdapter : RecyclerView.Adapter<AudioBookAdapter.ViewHolder>() {
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name: TextView = itemView.tvAudioBookName
-        val image: ImageView = itemView.ivAudioBookImage
+        private val name: TextView = itemView.tvAudioBookName
+        private val image: ImageView = itemView.ivAudioBookImage
 
         fun bind(audioBook: AudioBook) {
             name.text = audioBook.name
+            Glide.with(image.context).load(audioBook.imageUrl).into(image)
         }
     }
 
