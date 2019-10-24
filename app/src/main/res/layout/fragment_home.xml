@@ -4,11 +4,12 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ui.dashboard.DashboardFragment">
+        android:background="@android:color/white"
+        tools:context=".presentation.ui.home.HomeFragment">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHomeCategories"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Hello Dashboard"/>
+            android:layout_height="match_parent"/>
 
 </FrameLayout>
