@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
+import com.burhan.audiobooksapp.presentation.core.extension.setSingleClickListener
 import kotlinx.android.synthetic.main.item_audiobook.view.*
 
 class AudioBookAdapter(private val onClickListener: (AudioBook) -> Unit) :
@@ -38,7 +39,7 @@ class AudioBookAdapter(private val onClickListener: (AudioBook) -> Unit) :
         fun bind(audioBook: AudioBook, onClickListener: (AudioBook) -> Unit) {
             name.text = audioBook.name
             image.loadFromUrl(audioBook.imageUrl)
-            itemView.setOnClickListener { onClickListener(audioBook) }
+            itemView.setSingleClickListener { onClickListener(audioBook) }
         }
     }
 
