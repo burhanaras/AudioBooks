@@ -9,11 +9,17 @@
             style="@style/AudioBookRowListTitleStyle"
             android:text="The Newest Books"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="16sp"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAudioBookRowList"
             style="@style/AudioBookRowListStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"/>
 </LinearLayout>

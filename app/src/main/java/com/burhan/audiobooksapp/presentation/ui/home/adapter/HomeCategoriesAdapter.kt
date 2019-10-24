@@ -11,10 +11,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.burhan.audiobooksapp.R
+import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.domain.model.Category
 import kotlinx.android.synthetic.main.item_audiobook_row_list.view.*
 
-class HomeCategoriesAdapter : RecyclerView.Adapter<HomeCategoriesAdapter.ViewHolder>() {
+class HomeCategoriesAdapter(private val onClickListener: (AudioBook) -> Unit) :
+    RecyclerView.Adapter<HomeCategoriesAdapter.ViewHolder>() {
 
     private var data: MutableList<Category> = mutableListOf()
 
@@ -23,7 +25,7 @@ class HomeCategoriesAdapter : RecyclerView.Adapter<HomeCategoriesAdapter.ViewHol
 
     override fun getItemCount() = data.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(data[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(data[position], onClickListener)
     fun setData(data: List<Category>?) {
         data?.let {
             this.data = it.toMutableList()
@@ -35,11 +37,14 @@ class HomeCategoriesAdapter : RecyclerView.Adapter<HomeCategoriesAdapter.ViewHol
         private val categoryName: TextView = itemView.tvCategoryTitle
         private val recyclerView: RecyclerView = itemView.rvAudioBookRowList
 
-        fun bind(category: Category) {
+        fun bind(
+            category: Category,
+            onClickListener: (AudioBook) -> Unit
+        ) {
             categoryName.text = category.name
             recyclerView.setHasFixedSize(true)
             recyclerView.layoutManager = LinearLayoutManager(recyclerView.context, RecyclerView.HORIZONTAL, false)
-            val adapter = AudioBookAdapter()
+            val adapter = AudioBookAdapter(onClickListener)
             recyclerView.adapter = adapter
             adapter.setData(category.audioBooks)
         }

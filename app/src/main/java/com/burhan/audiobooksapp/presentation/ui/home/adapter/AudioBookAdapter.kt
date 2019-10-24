@@ -15,7 +15,8 @@ import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
 import kotlinx.android.synthetic.main.item_audiobook.view.*
 
-class AudioBookAdapter : RecyclerView.Adapter<AudioBookAdapter.ViewHolder>() {
+class AudioBookAdapter(private val onClickListener: (AudioBook) -> Unit) :
+    RecyclerView.Adapter<AudioBookAdapter.ViewHolder>() {
 
     private var data: List<AudioBook> = mutableListOf()
 
@@ -24,7 +25,7 @@ class AudioBookAdapter : RecyclerView.Adapter<AudioBookAdapter.ViewHolder>() {
 
     override fun getItemCount() = data.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(data[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(data[position], onClickListener)
     fun setData(audioBooks: List<AudioBook>) {
         this.data = audioBooks
         notifyDataSetChanged()
@@ -34,9 +35,10 @@ class AudioBookAdapter : RecyclerView.Adapter<AudioBookAdapter.ViewHolder>() {
         private val name: TextView = itemView.tvAudioBookName
         private val image: ImageView = itemView.ivAudioBookImage
 
-        fun bind(audioBook: AudioBook) {
+        fun bind(audioBook: AudioBook, onClickListener: (AudioBook) -> Unit) {
             name.text = audioBook.name
             image.loadFromUrl(audioBook.imageUrl)
+            itemView.setOnClickListener { onClickListener(audioBook) }
         }
     }
 

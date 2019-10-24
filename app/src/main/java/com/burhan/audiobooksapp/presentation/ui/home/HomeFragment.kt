@@ -1,16 +1,17 @@
 package com.burhan.audiobooksapp.presentation.ui.home
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.burhan.audiobooksapp.R
+import com.burhan.audiobooksapp.domain.model.AudioBook
+import com.burhan.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailActivity
 import com.burhan.audiobooksapp.presentation.ui.home.adapter.HomeCategoriesAdapter
 import kotlinx.android.synthetic.main.fragment_home.*
 
@@ -22,7 +23,11 @@ class HomeFragment : Fragment() {
     }
 
     private lateinit var viewModel: HomeFragmentViewModel
-    private val adapter = HomeCategoriesAdapter()
+    private val adapter = HomeCategoriesAdapter(object : (AudioBook) -> Unit {
+        override fun invoke(audioBook: AudioBook) {
+            startActivity(activity?.let { AudioBookDetailActivity.newIntent(it, audioBook) })
+        }
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

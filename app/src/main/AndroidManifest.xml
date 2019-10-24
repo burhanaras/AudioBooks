@@ -3,6 +3,7 @@
           package="com.burhan.audiobooksapp">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -11,9 +12,19 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
+                android:name=".presentation.ui.audiobookdetail.AudioBookDetailActivity"
+                android:label="@string/title_activity_audio_book_detail"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".presentation.ui.audiobookdetail.ScrollingActivity"
+                android:label="@string/title_activity_scrolling"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
                 android:name=".MainActivity"
-                android:label="@string/app_name"
-                android:configChanges="orientation|keyboardHidden">
+                android:configChanges="orientation|keyboardHidden"
+                android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW"/>
