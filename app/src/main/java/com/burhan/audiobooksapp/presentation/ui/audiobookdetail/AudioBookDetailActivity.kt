@@ -7,9 +7,12 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
+import com.burhan.audiobooksapp.presentation.core.extension.setSingleClickListener
+import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivity
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_audio_book_detail.*
+import kotlinx.android.synthetic.main.content_audio_book_detail.*
 import kotlin.math.abs
 
 
@@ -21,14 +24,14 @@ class AudioBookDetailActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         setUpToolbar()
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-
         intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
             tvAudioBookDetailTitle.text = audioBook.name
             ivAudioBookDetailImage.loadFromUrl(audioBook.imageUrl)
+            tvAudioBookDetailDescription.text = audioBook.description
+
+            fab.setSingleClickListener {
+                startActivity(NowPlayingActivity.newIntent(this, audioBook))
+            }
         }
     }
 
