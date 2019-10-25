@@ -13,14 +13,9 @@
             android:theme="@style/AppTheme">
         <activity
                 android:name=".presentation.ui.audiobookdetail.AudioBookDetailActivity"
-                android:label="@string/title_activity_audio_book_detail"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity
-                android:name=".presentation.ui.audiobookdetail.ScrollingActivity"
-                android:label="@string/title_activity_scrolling"
-                android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+
         <activity
                 android:name=".MainActivity"
                 android:configChanges="orientation|keyboardHidden"
