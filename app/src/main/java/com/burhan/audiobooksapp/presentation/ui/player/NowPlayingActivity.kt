@@ -1,12 +1,18 @@
 package com.burhan.audiobooksapp.presentation.ui.player
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.media.AudioFocusRequest
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.PowerManager
 import androidx.appcompat.app.AppCompatActivity
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
+import com.burhan.audiobooksapp.presentation.ui.player.audiofocus.AudioFocusObserver
 import kotlinx.android.synthetic.main.activity_now_playing.*
 
 class NowPlayingActivity : AppCompatActivity() {
@@ -14,11 +20,31 @@ class NowPlayingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_now_playing)
+        requestAudioFocus()
 
         intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
             tvPlayerAudioBookName.text = audioBook.name
             ivPlayerAudioBookImage.loadFromUrl(audioBook.imageUrl)
+
+            playMusic(audioBook.url)
         }
+    }
+
+    private fun requestAudioFocus() {
+        val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+       lifecycle.addObserver(AudioFocusObserver(audioManager))
+    }
+
+    private fun playMusic(url: String) {
+        val player = MediaPlayer()
+        player.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
+        player.setDataSource(url)
+        player.setOnPreparedListener {
+            it.start()
+        }
+        player.prepare()
+
+
     }
 
     companion object {
