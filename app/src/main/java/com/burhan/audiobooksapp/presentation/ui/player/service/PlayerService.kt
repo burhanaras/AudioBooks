@@ -2,9 +2,7 @@ package com.burhan.audiobooksapp.presentation.ui.player.service
 
 import android.app.Activity
 import android.app.Service
-import android.content.Context
 import android.content.Intent
-import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.IBinder
 import android.os.PowerManager
@@ -13,6 +11,7 @@ import com.burhan.audiobooksapp.domain.model.AudioBook
 
 class PlayerService : Service() {
 
+    private var audioBook: AudioBook? = null
     private lateinit var player: MediaPlayer
 
     override fun onBind(intent: Intent): IBinder? {
@@ -23,21 +22,39 @@ class PlayerService : Service() {
     override fun onCreate() {
         Log.d(TAG, "onCreate()")
         super.onCreate()
-        player = MediaPlayer()
-        player.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
-        player.setOnPreparedListener {
-            it.start()
-        }
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand()")
         intent?.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
-            player.setDataSource(audioBook.url)
-            player.prepareAsync()
+
+            if (this.audioBook != null) {
+                if (this.audioBook?.id != audioBook.id) {
+                    play(audioBook.url)
+                }
+            } else {
+                play(audioBook.url)
+            }
+
+            this.audioBook = audioBook
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun play(url: String) {
+        if (::player.isInitialized){
+            player.stop()
+            player.release()
+        }
+        player = MediaPlayer()
+        player.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
+        player.setDataSource(url)
+        player.setOnPreparedListener {
+            it.start()
+        }
+        player.prepareAsync()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
