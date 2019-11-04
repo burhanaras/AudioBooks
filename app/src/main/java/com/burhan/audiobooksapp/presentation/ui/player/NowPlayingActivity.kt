@@ -13,6 +13,7 @@ import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
 import com.burhan.audiobooksapp.presentation.ui.player.audiofocus.AudioFocusObserver
+import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
 import kotlinx.android.synthetic.main.activity_now_playing.*
 
 class NowPlayingActivity : AppCompatActivity() {
@@ -26,25 +27,13 @@ class NowPlayingActivity : AppCompatActivity() {
             tvPlayerAudioBookName.text = audioBook.name
             ivPlayerAudioBookImage.loadFromUrl(audioBook.imageUrl)
 
-            playMusic(audioBook.url)
+            startService(PlayerService.newIntent(this, audioBook))
         }
     }
 
     private fun requestAudioFocus() {
         val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
        lifecycle.addObserver(AudioFocusObserver(audioManager))
-    }
-
-    private fun playMusic(url: String) {
-        val player = MediaPlayer()
-        player.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
-        player.setDataSource(url)
-        player.setOnPreparedListener {
-            it.start()
-        }
-        player.prepare()
-
-
     }
 
     companion object {

@@ -12,8 +12,15 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".presentation.ui.player.NowPlayingActivity"
-                  android:launchMode="singleTop">
+        <service
+                android:name=".presentation.ui.player.service.PlayerService"
+                android:enabled="true"
+                android:exported="true">
+        </service>
+
+        <activity
+                android:name=".presentation.ui.player.NowPlayingActivity"
+                android:launchMode="singleTop">
         </activity>
         <activity
                 android:name=".presentation.ui.audiobookdetail.AudioBookDetailActivity"
