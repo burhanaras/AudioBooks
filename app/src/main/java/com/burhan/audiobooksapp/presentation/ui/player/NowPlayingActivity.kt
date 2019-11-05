@@ -3,12 +3,10 @@ package com.burhan.audiobooksapp.presentation.ui.player
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.media.AudioFocusRequest
 import android.media.AudioManager
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.PowerManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
@@ -27,13 +25,14 @@ class NowPlayingActivity : AppCompatActivity() {
             tvPlayerAudioBookName.text = audioBook.name
             ivPlayerAudioBookImage.loadFromUrl(audioBook.imageUrl)
 
-            startService(PlayerService.newIntent(this, audioBook))
+            //startService(PlayerService.newIntent(this, audioBook))
+            ContextCompat.startForegroundService(this, PlayerService.newIntent(this, audioBook))
         }
     }
 
     private fun requestAudioFocus() {
         val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-       lifecycle.addObserver(AudioFocusObserver(audioManager))
+        lifecycle.addObserver(AudioFocusObserver(audioManager))
     }
 
     companion object {

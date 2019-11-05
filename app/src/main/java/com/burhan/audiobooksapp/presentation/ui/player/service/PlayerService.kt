@@ -8,6 +8,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.util.Log
 import com.burhan.audiobooksapp.domain.model.AudioBook
+import com.burhan.audiobooksapp.presentation.ui.player.notification.NotificationBuilder
 
 class PlayerService : Service() {
 
@@ -22,11 +23,11 @@ class PlayerService : Service() {
     override fun onCreate() {
         Log.d(TAG, "onCreate()")
         super.onCreate()
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand()")
+
         intent?.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
 
             if (this.audioBook != null) {
@@ -38,13 +39,14 @@ class PlayerService : Service() {
             }
 
             this.audioBook = audioBook
+            startForeground(99, NotificationBuilder(this).buildMediaNotification(audioBook))
         }
 
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     private fun play(url: String) {
-        if (::player.isInitialized){
+        if (::player.isInitialized) {
             player.stop()
             player.release()
         }
@@ -74,7 +76,5 @@ class PlayerService : Service() {
         private const val ARG_AUDIO_BOOK = "ARG_AUDIO_BOOK"
         fun newIntent(callerActivity: Activity, audioBook: AudioBook): Intent =
             Intent(callerActivity, PlayerService::class.java).putExtra(ARG_AUDIO_BOOK, audioBook)
-
-
     }
 }
