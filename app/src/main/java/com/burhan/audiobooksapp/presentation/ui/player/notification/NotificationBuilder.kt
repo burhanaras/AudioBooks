@@ -10,6 +10,7 @@ import android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY_PAUSE
 import android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
 import com.burhan.audiobooksapp.R
@@ -62,6 +63,7 @@ class NotificationBuilder(private val context: Context) {
                         setSmallIcon(R.drawable.ic_launcher_foreground)
                         setLargeIcon(largeIconBitmap)
                         setColorized(true)
+                        color = ContextCompat.getColor(context, R.color.colorPrimaryDark)
                         setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         setStyle(mediaStyle)
                         setOnlyAlertOnce(true)
