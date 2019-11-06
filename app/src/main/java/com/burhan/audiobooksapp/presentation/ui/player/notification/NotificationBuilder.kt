@@ -11,9 +11,12 @@ import android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.media.session.MediaButtonReceiver
+import com.bumptech.glide.Glide
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
-import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Developed by tcbaras on 2019-11-05.
@@ -37,20 +40,38 @@ class NotificationBuilder(private val context: Context) {
         .setCancelButtonIntent(stopPendingIntent)
         .setShowCancelButton(true)
 
-    fun buildMediaNotification(audioBook: AudioBook): Notification? {
+    fun buildMediaNotification(
+        audioBook: AudioBook,
+        callback: (notification: Notification) -> Unit
+    ) {
         if (shouldCreateNotificationChannel()) {
             createNotificationChannel()
         }
 
-        return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID).apply {
-            setContentTitle(audioBook.name)
-            setContentText(audioBook.description)
-            setSmallIcon(R.drawable.ic_launcher_foreground)
-            color = Color.GREEN
-            setStyle(mediaStyle)
-            addAction(playPauseAction)
-            setDeleteIntent(stopPendingIntent)
-        }.build()
+        GlobalScope.launch(Dispatchers.IO) {
+            val futureTarget = Glide.with(context).asBitmap().load(audioBook.imageUrl).submit()
+            val largeIconBitmap = futureTarget.get()
+            Glide.with(context).clear(futureTarget)
+
+            launch(Dispatchers.Main) {
+
+                val notification =
+                    NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID).apply {
+                        setContentTitle(audioBook.name)
+                        setContentText(audioBook.author)
+                        setSmallIcon(R.drawable.ic_launcher_foreground)
+                        setLargeIcon(largeIconBitmap)
+                        setColorized(true)
+                        setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        setStyle(mediaStyle)
+                        setOnlyAlertOnce(true)
+                        addAction(playPauseAction)
+                        setDeleteIntent(stopPendingIntent)
+                    }.build()
+
+                callback(notification)
+            }
+        }
     }
 
     private fun shouldCreateNotificationChannel() =

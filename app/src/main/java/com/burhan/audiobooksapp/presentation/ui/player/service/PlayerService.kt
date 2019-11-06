@@ -39,7 +39,9 @@ class PlayerService : Service() {
             }
 
             this.audioBook = audioBook
-            startForeground(99, NotificationBuilder(this).buildMediaNotification(audioBook))
+            NotificationBuilder(this).buildMediaNotification(audioBook) { notification ->
+                startForeground(99, notification)
+            }
         }
 
         return START_STICKY
