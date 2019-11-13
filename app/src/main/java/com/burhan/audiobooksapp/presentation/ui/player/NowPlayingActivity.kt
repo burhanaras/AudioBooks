@@ -7,6 +7,8 @@ import android.media.AudioManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
@@ -16,24 +18,49 @@ import kotlinx.android.synthetic.main.activity_now_playing.*
 
 class NowPlayingActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: NowPlayingActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_now_playing)
         requestAudioFocus()
 
-        intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
-            tvPlayerAudioBookName.text = audioBook.name
-            ivPlayerAudioBookImage.loadFromUrl(audioBook.imageUrl)
+        viewModel = initViewModels()
+        setObservers()
 
-            //startService(PlayerService.newIntent(this, audioBook))
-            ContextCompat.startForegroundService(this, PlayerService.newIntent(this, audioBook))
+        intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
+            viewModel.play(audioBook)
+
+
+
         }
+    }
+
+    private fun setObservers() {
+        viewModel.nowPlayingSDO.observe(this, Observer {
+            it?.let { nowPlayingSDO ->
+                tvPlayerAudioBookName.text = nowPlayingSDO.title
+                ivPlayerAudioBookImage.loadFromUrl(nowPlayingSDO.imageUrl)
+            }
+        })
+        viewModel.nowPlayingTimeInfoSDO.observe(this, Observer {
+            it?.let { nowPlayingTimeInfoSDO ->
+                tvNowPlayingProgress.text = nowPlayingTimeInfoSDO.progress
+                tvNowPlayingDuration.text = nowPlayingTimeInfoSDO.duration
+                seekBar.progress = nowPlayingTimeInfoSDO.seekBarProgress
+                seekBar.max = nowPlayingTimeInfoSDO.seekBarMaxValue
+                ivNowPlayingPlayPauseButton.setImageResource(nowPlayingTimeInfoSDO.playPauseButtonIcon)
+            }
+        })
     }
 
     private fun requestAudioFocus() {
         val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         lifecycle.addObserver(AudioFocusObserver(audioManager))
     }
+
+    private fun initViewModels() =
+        ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
 
     companion object {
         private const val ARG_AUDIO_BOOK: String = "ARG_AUDIO_BOOK"

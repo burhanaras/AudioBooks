@@ -28,7 +28,7 @@ class NotificationBuilder(private val context: Context) {
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     private val playPauseAction = NotificationCompat.Action(
-        R.drawable.ic_home_black_24dp,
+        R.drawable.ic_play,
         "Play/Pause",
         MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_PLAY_PAUSE)
     )

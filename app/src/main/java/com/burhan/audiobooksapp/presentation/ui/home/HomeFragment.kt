@@ -17,11 +17,6 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment() {
 
-    companion object {
-        val TAG: String = HomeFragment::class.java.simpleName
-        fun newInstance() = HomeFragment()
-    }
-
     private lateinit var viewModel: HomeFragmentViewModel
     private val adapter = HomeCategoriesAdapter(object : (AudioBook) -> Unit {
         override fun invoke(audioBook: AudioBook) {
@@ -44,18 +39,23 @@ class HomeFragment : Fragment() {
         viewModel.loadData()
     }
 
-    private fun setObservers() {
-        viewModel.data.observe(this, Observer { data ->
-            adapter.setData(data)
-        })
-    }
-
     private fun initViewModels() = ViewModelProviders.of(this).get(HomeFragmentViewModel::class.java)
 
     private fun setRecyclerView() {
         rvHomeCategories.setHasFixedSize(true)
         rvHomeCategories.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
         rvHomeCategories.adapter = adapter
+    }
+
+    private fun setObservers() {
+        viewModel.data.observe(this, Observer { data ->
+            adapter.setData(data)
+        })
+    }
+
+    companion object {
+        val TAG: String = HomeFragment::class.java.simpleName
+        fun newInstance() = HomeFragment()
     }
 
 }
