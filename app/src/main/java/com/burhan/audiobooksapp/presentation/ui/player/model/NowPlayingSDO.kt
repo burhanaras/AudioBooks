@@ -1,6 +1,7 @@
 package com.burhan.audiobooksapp.presentation.ui.player.model
 
 import android.os.Parcelable
+import com.burhan.audiobooksapp.domain.model.AudioBook
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -20,4 +21,18 @@ data class NowPlayingTimeInfoSDO(
     val seekBarProgress: Int,
     val seekBarMaxValue: Int,
     val playPauseButtonIcon: Int
+) : Parcelable
+
+/** Player Broadcast */
+
+enum class PlayStatus {
+    PLAYING, IDLE
+}
+
+@Parcelize
+data class NowPlayingInfo(
+    val audioBook: AudioBook,
+    val progressSc: Int,
+    val durationSc: Int,
+    val playStatus: PlayStatus
 ) : Parcelable

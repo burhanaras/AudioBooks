@@ -9,9 +9,13 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
+import com.burhan.audiobooksapp.presentation.core.extension.toPrettyTimeInfoAsMMSS
+import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingInfo
 import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingSDO
 import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingTimeInfoSDO
+import com.burhan.audiobooksapp.presentation.ui.player.model.PlayStatus
 import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
 
 /**
@@ -23,12 +27,35 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            intent.getParcelableExtra<NowPlayingSDO>("nowPlayingSDO")?.let { nowPlayingData ->
-                nowPlayingSDO.postValue(nowPlayingData)
-            }
-            intent.getParcelableExtra<NowPlayingTimeInfoSDO>("nowPlayingTimeInfoSDO")?.let { nowPlayingTimeInfo ->
-                nowPlayingTimeInfoSDO.postValue(nowPlayingTimeInfo)
-            }
+            intent.getParcelableExtra<NowPlayingInfo>("NowPlayingStartInfo")
+                ?.let { nowPlayingInfo ->
+                    //                    nowPlayingSDO.postValue(nowPlayingData)
+                }
+            intent.getParcelableExtra<NowPlayingInfo>("NowPlayingInfo")
+                ?.let { nowPlayingInfo ->
+                    val progress = nowPlayingInfo.progressSc.toPrettyTimeInfoAsMMSS()
+                    val duration = nowPlayingInfo.durationSc.toPrettyTimeInfoAsMMSS()
+                    val seekBarMaxValue = 100
+                    val seekBarProgress = if (nowPlayingInfo.durationSc > 0)
+                        ((nowPlayingInfo.progressSc.toDouble() / nowPlayingInfo.durationSc.toDouble()) * seekBarMaxValue).toInt()
+                    else 0
+                    val playIconRes =
+                        if (nowPlayingInfo.playStatus == PlayStatus.PLAYING) R.drawable.ic_pause else R.drawable.ic_play
+                    val sdo =
+                        NowPlayingTimeInfoSDO(
+                            progress,
+                            duration,
+                            seekBarProgress,
+                            seekBarMaxValue,
+                            playIconRes
+                        )
+                    nowPlayingTimeInfoSDO.postValue(sdo)
+                }
+            intent.getParcelableExtra<NowPlayingInfo>("NowPlayingFinishInfo")
+                ?.let { nowPlayingInfo ->
+                    val sdo = NowPlayingTimeInfoSDO("", "", 10, 100, R.drawable.ic_play)
+//                    nowPlayingTimeInfoSDO.postValue(nowPlayingTimeInfo)
+                }
         }
     }
 

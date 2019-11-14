@@ -10,7 +10,8 @@ import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.burhan.audiobooksapp.domain.model.AudioBook
-import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingTimeInfoSDO
+import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingInfo
+import com.burhan.audiobooksapp.presentation.ui.player.model.PlayStatus
 import com.burhan.audiobooksapp.presentation.ui.player.notification.NotificationBuilder
 import kotlin.math.roundToInt
 
@@ -41,13 +42,14 @@ class PlayerService : LifecycleService() {
 
             if (this.audioBook != null) {
                 if (this.audioBook?.id != audioBook.id) {
-                    play(audioBook.url)
+                    this.audioBook = audioBook
+                    play()
                 }
             } else {
-                play(audioBook.url)
+                this.audioBook = audioBook
+                play()
             }
 
-            this.audioBook = audioBook
             NotificationBuilder(this).buildMediaNotification(audioBook) { notification ->
                 startForeground(99, notification)
             }
@@ -56,45 +58,107 @@ class PlayerService : LifecycleService() {
         return START_STICKY
     }
 
-    private fun play(url: String) {
-        if (::player.isInitialized) {
-            player.stop()
-            player.release()
+    private fun play() {
+
+        this.audioBook?.let { audioBook ->
+
+            if (::player.isInitialized) {
+                player.stop()
+                player.release()
+            }
+
+            player = MediaPlayer()
+            player.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
+            player.setDataSource(audioBook.url)
+            player.setOnPreparedListener {
+                it.start()
+
+                sendNowPlayingStartBroadcast()
+
+                countDownTimer?.cancel()
+                countDownTimer = object : CountDownTimer(player.duration.toLong(), 1000) {
+                    override fun onFinish() {
+                        Log.d("BURHAN", "Finish()")
+                        sendNowPlayingFinishBroadcast()
+                    }
+
+                    override fun onTick(millisUntilFinish: Long) {
+                        val seconds =
+                            (player.duration.toLong() - millisUntilFinish).toDouble().roundToInt() / 1000
+                        Log.d("BURHAN", "$seconds")
+
+                        sendNowPlayingTimeInfoBroadcast(
+                            seconds,
+                            (player.duration / 1E3).toInt(), player.isPlaying
+                        )
+
+                    }
+
+                }.start()
+
+            }
+            player.setOnCompletionListener {
+                countDownTimer = null
+            }
+            player.prepareAsync()
+
         }
-        player = MediaPlayer()
-        player.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
-        player.setDataSource(url)
-        player.setOnPreparedListener {
-            it.start()
 
-            val playerDuration = "${(player.duration / 1000)}:00"
-            countDownTimer?.cancel()
-            countDownTimer = object : CountDownTimer(player.duration.toLong(), 1000) {
-                override fun onFinish() {
-                    Log.d("BURHAN", "Finish()")
-                }
-
-                override fun onTick(millisUntilFinish: Long) {
-                    val seconds =
-                        (player.duration.toLong() - millisUntilFinish).toDouble().roundToInt() / 1000
-                    Log.d("BURHAN", "$seconds")
-
-                    val intent = Intent("com.burhan.audiobooks.player.info.receive")
-                    intent.putExtra(
-                        "nowPlayingTimeInfoSDO",
-                        NowPlayingTimeInfoSDO("$seconds", playerDuration, 10, 100, 0)
-                    )
-                    LocalBroadcastManager.getInstance(this@PlayerService).sendBroadcast(intent)
-                }
-
-            }.start()
-
-        }
-        player.setOnCompletionListener {
-           countDownTimer = null
-        }
-        player.prepareAsync()
     }
+
+    private fun sendNowPlayingStartBroadcast() {
+        this.audioBook?.let { audioBook ->
+            val intent = Intent("com.burhan.audiobooks.player.info.receive")
+            intent.putExtra(
+                "NowPlayingStartInfo",
+                NowPlayingInfo(
+                    audioBook,
+                    0,
+                    (player.duration / 1E3).toInt(),
+                    PlayStatus.PLAYING
+                )
+            )
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        }
+    }
+
+    private fun sendNowPlayingTimeInfoBroadcast(
+        progress: Int,
+        duration: Int,
+        playing: Boolean
+    ) {
+        this.audioBook?.let { audioBook ->
+            val intent = Intent("com.burhan.audiobooks.player.info.receive")
+            intent.putExtra(
+                "NowPlayingInfo", NowPlayingInfo(
+                    audioBook,
+                    progress,
+                    duration,
+                    if (playing) PlayStatus.PLAYING else PlayStatus.IDLE
+                )
+            )
+            LocalBroadcastManager.getInstance(this@PlayerService).sendBroadcast(intent)
+        }
+
+
+    }
+
+    private fun sendNowPlayingFinishBroadcast() {
+        this.audioBook?.let { audioBook ->
+            val intent = Intent("com.burhan.audiobooks.player.info.receive")
+            intent.putExtra(
+                "NowPlayingFinishInfo",
+                NowPlayingInfo(
+                    audioBook,
+                    (player.duration / 1E3).toInt(),
+                    (player.duration / 1E3).toInt(),
+                    PlayStatus.IDLE
+                )
+            )
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        }
+    }
+
 
     override fun onUnbind(intent: Intent?): Boolean {
         Log.d(TAG, "onUnbind()")
