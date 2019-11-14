@@ -5,15 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Bundle
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
 import com.burhan.audiobooksapp.presentation.ui.player.audiofocus.AudioFocusObserver
-import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
 import kotlinx.android.synthetic.main.activity_now_playing.*
 
 class NowPlayingActivity : AppCompatActivity() {
@@ -27,13 +26,27 @@ class NowPlayingActivity : AppCompatActivity() {
 
         viewModel = initViewModels()
         setObservers()
+        initUI()
 
         intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
             viewModel.play(audioBook)
-
-
-
         }
+    }
+
+    private fun initUI() {
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekbar: SeekBar, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                viewModel.seekBarProgressChanged(seekBar.progress, true)
+            }
+        })
     }
 
     private fun setObservers() {

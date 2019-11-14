@@ -25,14 +25,27 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     internal var nowPlayingSDO = MutableLiveData<NowPlayingSDO>()
     internal var nowPlayingTimeInfoSDO = MutableLiveData<NowPlayingTimeInfoSDO>()
 
+    private var audioBook: AudioBook? = null
+
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             intent.getParcelableExtra<NowPlayingInfo>("NowPlayingStartInfo")
                 ?.let { nowPlayingInfo ->
-                    //                    nowPlayingSDO.postValue(nowPlayingData)
+                    val sdo = NowPlayingSDO(
+                        nowPlayingInfo.audioBook.name,
+                        nowPlayingInfo.audioBook.author,
+                        nowPlayingInfo.audioBook.imageUrl
+                    )
+                    nowPlayingSDO.postValue(sdo)
                 }
             intent.getParcelableExtra<NowPlayingInfo>("NowPlayingInfo")
                 ?.let { nowPlayingInfo ->
+
+                    if (audioBook == null || audioBook?.id != nowPlayingInfo.audioBook.id) {
+                        // Activity is opened while audiobook is already playing || A new audio book
+                        bindScreen(nowPlayingInfo.audioBook)
+                    }
+
                     val progress = nowPlayingInfo.progressSc.toPrettyTimeInfoAsMMSS()
                     val duration = nowPlayingInfo.durationSc.toPrettyTimeInfoAsMMSS()
                     val seekBarMaxValue = 100
@@ -53,10 +66,30 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                 }
             intent.getParcelableExtra<NowPlayingInfo>("NowPlayingFinishInfo")
                 ?.let { nowPlayingInfo ->
-                    val sdo = NowPlayingTimeInfoSDO("", "", 10, 100, R.drawable.ic_play)
-//                    nowPlayingTimeInfoSDO.postValue(nowPlayingTimeInfo)
+                    val progress = nowPlayingInfo.progressSc.toPrettyTimeInfoAsMMSS()
+                    val duration = nowPlayingInfo.durationSc.toPrettyTimeInfoAsMMSS()
+                    val seekBarMaxValue = 100
+                    val seekBarProgress = if (nowPlayingInfo.durationSc > 0)
+                        ((nowPlayingInfo.progressSc.toDouble() / nowPlayingInfo.durationSc.toDouble()) * seekBarMaxValue).toInt()
+                    else 0
+                    val playIconRes =
+                        if (nowPlayingInfo.playStatus == PlayStatus.PLAYING) R.drawable.ic_pause else R.drawable.ic_play
+                    val sdo =
+                        NowPlayingTimeInfoSDO(
+                            progress,
+                            duration,
+                            seekBarProgress,
+                            seekBarMaxValue,
+                            playIconRes
+                        )
+                    nowPlayingTimeInfoSDO.postValue(sdo)
                 }
         }
+    }
+
+    private fun bindScreen(audioBook: AudioBook) {
+        this.audioBook = audioBook
+        nowPlayingSDO.postValue(NowPlayingSDO(audioBook.name, audioBook.author, audioBook.imageUrl))
     }
 
     init {
@@ -65,6 +98,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     }
 
     fun play(audioBook: AudioBook) {
+        bindScreen(audioBook)
         ContextCompat.startForegroundService(app, PlayerService.newIntent(app, audioBook))
     }
 
@@ -75,5 +109,9 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     override fun onCleared() {
         super.onCleared()
         LocalBroadcastManager.getInstance(app).unregisterReceiver(broadcastReceiver)
+    }
+
+    fun seekBarProgressChanged(progress: Int, fromUser: Boolean) {
+        this.audioBook?.let { audioBook ->  ContextCompat.startForegroundService(app, PlayerService.newIntent(app, audioBook, progress)) }
     }
 }

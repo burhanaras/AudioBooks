@@ -40,14 +40,27 @@ class PlayerService : LifecycleService() {
 
         intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
 
-            if (this.audioBook != null) {
-                if (this.audioBook?.id != audioBook.id) {
+            when {
+                this.audioBook == null -> {
                     this.audioBook = audioBook
                     play()
                 }
-            } else {
-                this.audioBook = audioBook
-                play()
+                this.audioBook?.id != audioBook.id -> {
+                    this.audioBook = audioBook
+                    play()
+                }
+                !player.isPlaying && this.audioBook?.id == audioBook.id -> {
+                    this.audioBook = audioBook
+                    play()
+                }
+                else -> {
+                    intent.getIntExtra(ARG_PROGRESS, -1).let { percent ->
+                        if (percent > 0) { // percent is between 0 and 100
+                            player.seekTo(player.duration * percent / 100)
+                        }
+                    }
+                }
+
             }
 
             NotificationBuilder(this).buildMediaNotification(audioBook) { notification ->
@@ -78,27 +91,29 @@ class PlayerService : LifecycleService() {
                 countDownTimer?.cancel()
                 countDownTimer = object : CountDownTimer(player.duration.toLong(), 1000) {
                     override fun onFinish() {
-                        Log.d("BURHAN", "Finish()")
                         sendNowPlayingFinishBroadcast()
                     }
 
                     override fun onTick(millisUntilFinish: Long) {
                         val seconds =
-                            (player.duration.toLong() - millisUntilFinish).toDouble().roundToInt() / 1000
-                        Log.d("BURHAN", "$seconds")
+                            (player.currentPosition).toDouble().roundToInt() / 1000
 
                         sendNowPlayingTimeInfoBroadcast(
                             seconds,
                             (player.duration / 1E3).toInt(), player.isPlaying
                         )
+                        player.currentPosition
 
                     }
 
                 }.start()
 
             }
+
             player.setOnCompletionListener {
+                countDownTimer?.cancel()
                 countDownTimer = null
+                sendNowPlayingFinishBroadcast()
             }
             player.prepareAsync()
 
@@ -175,7 +190,12 @@ class PlayerService : LifecycleService() {
     companion object {
         val TAG: String = PlayerService::class.java.simpleName
         private const val ARG_AUDIO_BOOK = "ARG_AUDIO_BOOK"
+        private const val ARG_PROGRESS = "ARG_PROGRESS"
         fun newIntent(callerContext: Context, audioBook: AudioBook): Intent =
             Intent(callerContext, PlayerService::class.java).putExtra(ARG_AUDIO_BOOK, audioBook)
+
+        fun newIntent(callerContext: Context, audioBook: AudioBook, progress: Int): Intent =
+            Intent(callerContext, PlayerService::class.java).putExtra(ARG_AUDIO_BOOK, audioBook)
+                .putExtra(ARG_PROGRESS, progress)
     }
 }
