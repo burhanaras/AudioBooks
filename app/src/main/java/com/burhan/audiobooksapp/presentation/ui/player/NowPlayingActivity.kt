@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
+import com.burhan.audiobooksapp.presentation.core.extension.setSingleClickListener
 import com.burhan.audiobooksapp.presentation.ui.player.audiofocus.AudioFocusObserver
 import kotlinx.android.synthetic.main.activity_now_playing.*
 
@@ -34,6 +35,11 @@ class NowPlayingActivity : AppCompatActivity() {
     }
 
     private fun initUI() {
+
+        ivNowPlayingPlayPauseButton.setSingleClickListener {
+            viewModel.togglePlayPause()
+        }
+
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekbar: SeekBar, progress: Int, fromUser: Boolean) {
 
@@ -53,6 +59,7 @@ class NowPlayingActivity : AppCompatActivity() {
         viewModel.nowPlayingSDO.observe(this, Observer {
             it?.let { nowPlayingSDO ->
                 tvPlayerAudioBookName.text = nowPlayingSDO.title
+                tvPlayerAuthor.text = nowPlayingSDO.author
                 ivPlayerAudioBookImage.loadFromUrl(nowPlayingSDO.imageUrl)
             }
         })

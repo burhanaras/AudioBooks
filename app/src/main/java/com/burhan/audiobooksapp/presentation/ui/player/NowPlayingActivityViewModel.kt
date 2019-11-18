@@ -26,6 +26,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     internal var nowPlayingTimeInfoSDO = MutableLiveData<NowPlayingTimeInfoSDO>()
 
     private var audioBook: AudioBook? = null
+    private var isPlaying: Boolean = false
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -37,6 +38,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                         nowPlayingInfo.audioBook.imageUrl
                     )
                     nowPlayingSDO.postValue(sdo)
+                    isPlaying = true
                 }
             intent.getParcelableExtra<NowPlayingInfo>("NowPlayingInfo")
                 ?.let { nowPlayingInfo ->
@@ -63,6 +65,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                             playIconRes
                         )
                     nowPlayingTimeInfoSDO.postValue(sdo)
+                    isPlaying = nowPlayingInfo.playStatus == PlayStatus.PLAYING
                 }
             intent.getParcelableExtra<NowPlayingInfo>("NowPlayingFinishInfo")
                 ?.let { nowPlayingInfo ->
@@ -83,6 +86,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                             playIconRes
                         )
                     nowPlayingTimeInfoSDO.postValue(sdo)
+                    isPlaying = nowPlayingInfo.playStatus == PlayStatus.PLAYING
                 }
         }
     }
@@ -102,8 +106,8 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
         ContextCompat.startForegroundService(app, PlayerService.newIntent(app, audioBook))
     }
 
-    fun playPause() {
-
+    fun togglePlayPause() {
+        isPlaying = !isPlaying
     }
 
     override fun onCleared() {
@@ -112,6 +116,11 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     }
 
     fun seekBarProgressChanged(progress: Int, fromUser: Boolean) {
-        this.audioBook?.let { audioBook ->  ContextCompat.startForegroundService(app, PlayerService.newIntent(app, audioBook, progress)) }
+        this.audioBook?.let { audioBook ->
+            ContextCompat.startForegroundService(
+                app,
+                PlayerService.newIntent(app, audioBook, progress)
+            )
+        }
     }
 }

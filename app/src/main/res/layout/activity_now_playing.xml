@@ -7,18 +7,27 @@
         tools:context=".presentation.ui.player.NowPlayingActivity">
 
 
-    <ImageView
-            android:id="@+id/ivPlayerAudioBookImage"
+    <androidx.cardview.widget.CardView
+            android:id="@+id/cardPlayerAudioBookImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:adjustViewBounds="true"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_launcher_background" />
+            app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+                android:id="@+id/ivPlayerAudioBookImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/ic_launcher_background" />
+    </androidx.cardview.widget.CardView>
+
 
     <TextView
             android:id="@+id/tvPlayerAudioBookName"
@@ -28,9 +37,10 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
             android:text="Book Name Goes Here"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivPlayerAudioBookImage" />
+            app:layout_constraintTop_toBottomOf="@+id/cardPlayerAudioBookImage" />
 
     <TextView
             android:id="@+id/tvNowPlayingProgress"
@@ -97,4 +107,14 @@
             app:layout_constraintStart_toEndOf="@+id/ivNowPlayingPlayPauseButton"
             app:layout_constraintTop_toTopOf="@+id/ivNowPlayingPlayPauseButton"
             app:srcCompat="?attr/actionModeShareDrawable" />
+
+    <TextView
+            android:id="@+id/tvPlayerAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Author Name"
+            app:layout_constraintEnd_toEndOf="@+id/tvPlayerAudioBookName"
+            app:layout_constraintStart_toStartOf="@+id/tvPlayerAudioBookName"
+            app:layout_constraintTop_toBottomOf="@+id/tvPlayerAudioBookName" />
 </androidx.constraintlayout.widget.ConstraintLayout>
