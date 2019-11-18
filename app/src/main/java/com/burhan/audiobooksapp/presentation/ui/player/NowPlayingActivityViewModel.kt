@@ -103,11 +103,17 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
 
     fun play(audioBook: AudioBook) {
         bindScreen(audioBook)
-        ContextCompat.startForegroundService(app, PlayerService.newIntent(app, audioBook))
+        ContextCompat.startForegroundService(app, PlayerService.newIntentForPlay(app, audioBook))
     }
 
     fun togglePlayPause() {
         isPlaying = !isPlaying
+        this.audioBook?.let { audioBook ->
+            ContextCompat.startForegroundService(
+                app,
+                PlayerService.newIntentForTogglePlayPause(app, audioBook, isPlaying)
+            )
+        }
     }
 
     override fun onCleared() {
@@ -119,7 +125,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
         this.audioBook?.let { audioBook ->
             ContextCompat.startForegroundService(
                 app,
-                PlayerService.newIntent(app, audioBook, progress)
+                PlayerService.newIntentForTimeShiftToPercentage(app, audioBook, progress)
             )
         }
     }

@@ -54,13 +54,59 @@ class PlayerService : LifecycleService() {
                     play()
                 }
                 else -> {
-                    intent.getIntExtra(ARG_PROGRESS, -1).let { percent ->
+                    intent.getIntExtra(ARG_TIME_SHIFT_PERCENTAGE, -1).let { percent ->
                         if (percent > 0) { // percent is between 0 and 100
                             player.seekTo(player.duration * percent / 100)
                         }
                     }
                 }
 
+            }
+
+            val command = CMD_PLAY
+            when (command) {
+                CMD_PLAY -> {
+                    when {
+                        this.audioBook == null -> {
+                            this.audioBook = audioBook
+                            play()
+                        }
+                        this.audioBook?.id == audioBook.id -> {
+                            if (player.isPlaying) {
+                                // Same audio book is already playing. Do nothing.
+                            } else {
+                                //This audio has been played and finished and user wants to play again
+                                this.audioBook = audioBook
+                                play()
+                            }
+                        }
+                        else -> {
+                            this.audioBook = audioBook
+                            play()
+                        }
+                    }
+                }
+                CMD_TOGGLE_PLAY_PAUSE -> {
+                    if (player.isPlaying) {
+                        player.pause()
+                    } else {
+                        player.start()
+                    }
+                }
+                CMD_TIME_SHIFT_TO_PERCENT -> {
+                    intent.getIntExtra(ARG_TIME_SHIFT_PERCENTAGE, -1).let { percent ->
+                        if (percent > 0) { // percent is between 0 and 100
+                            player.seekTo(player.duration * percent / 100)
+                        }
+                    }
+                }
+                CMD_TIME_SHIFT_WITH_AMOUNT -> {
+                    intent.getIntExtra(ARG_TIME_SHIFT_SECONDS, 0).let { seconds ->
+                        if (seconds != 0) { // amount is seconds. like: 30, -10
+                            player.seekTo((player.duration + seconds * 1E3).toInt())
+                        }
+                    }
+                }
             }
 
             NotificationBuilder(this).buildMediaNotification(audioBook) { notification ->
@@ -189,13 +235,58 @@ class PlayerService : LifecycleService() {
 
     companion object {
         val TAG: String = PlayerService::class.java.simpleName
-        private const val ARG_AUDIO_BOOK = "ARG_AUDIO_BOOK"
-        private const val ARG_PROGRESS = "ARG_PROGRESS"
-        fun newIntent(callerContext: Context, audioBook: AudioBook): Intent =
-            Intent(callerContext, PlayerService::class.java).putExtra(ARG_AUDIO_BOOK, audioBook)
 
-        fun newIntent(callerContext: Context, audioBook: AudioBook, progress: Int): Intent =
-            Intent(callerContext, PlayerService::class.java).putExtra(ARG_AUDIO_BOOK, audioBook)
-                .putExtra(ARG_PROGRESS, progress)
+        const val CMD_PLAY = "CMD_PLAY"
+        const val CMD_TOGGLE_PLAY_PAUSE = "CMD_TOGGLE_PLAY_PAUSE"
+        const val CMD_TIME_SHIFT_TO_PERCENT = "CMD_TIME_SHIFT_TO_PERCENT"
+        const val CMD_TIME_SHIFT_WITH_AMOUNT = "CMD_TIME_SHIFT_WITH_AMOUNT"
+
+        private const val ARG_AUDIO_BOOK = "ARG_AUDIO_BOOK"
+        private const val ARG_COMMAND = "ARG_COMMAND"
+
+        private const val ARG_TOGGLE_PLAY_PAUSE = "ARG_TOGGLE_PLAY_PAUSE"
+        private const val ARG_TIME_SHIFT_PERCENTAGE = "ARG_TIME_SHIFT_PERCENTAGE"
+        private const val ARG_TIME_SHIFT_SECONDS = "ARG_TIME_SHIFT_SECONDS"
+
+        fun newIntentForPlay(callerContext: Context, audioBook: AudioBook): Intent =
+            Intent(callerContext, PlayerService::class.java)
+                .putExtra(ARG_COMMAND, CMD_PLAY)
+                .putExtra(ARG_AUDIO_BOOK, audioBook)
+
+        fun newIntentForTogglePlayPause(
+            callerContext: Context,
+            audioBook: AudioBook,
+            isPlay: Boolean
+        ): Intent =
+            Intent(callerContext, PlayerService::class.java).putExtra(
+                ARG_TOGGLE_PLAY_PAUSE,
+                CMD_TOGGLE_PLAY_PAUSE
+            ).putExtra(ARG_AUDIO_BOOK, audioBook)
+                .putExtra(ARG_TOGGLE_PLAY_PAUSE, isPlay)
+
+        fun newIntentForTimeShiftToPercentage(
+            callerContext: Context,
+            audioBook: AudioBook,
+            progress: Int
+        ): Intent =
+            Intent(
+                callerContext,
+                PlayerService::class.java
+            ).putExtra(ARG_COMMAND, CMD_TIME_SHIFT_TO_PERCENT)
+                .putExtra(ARG_AUDIO_BOOK, audioBook)
+                .putExtra(ARG_TIME_SHIFT_PERCENTAGE, progress)
+
+        fun newIntentForTimeShiftWithAmount(
+            callerContext: Context,
+            audioBook: AudioBook,
+            seconds: Int
+        ): Intent =
+            Intent(callerContext, PlayerService::class.java).putExtra(
+                ARG_COMMAND,
+                CMD_TIME_SHIFT_WITH_AMOUNT
+            ).putExtra(
+                ARG_TIME_SHIFT_SECONDS,
+                seconds
+            )
     }
 }
