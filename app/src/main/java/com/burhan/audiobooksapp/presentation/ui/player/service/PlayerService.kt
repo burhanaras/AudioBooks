@@ -39,71 +39,49 @@ class PlayerService : LifecycleService() {
         Log.d(TAG, "onStartCommand()")
 
         intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
+            intent.getStringExtra(ARG_COMMAND)?.let { command ->
 
-            when {
-                this.audioBook == null -> {
-                    this.audioBook = audioBook
-                    play()
-                }
-                this.audioBook?.id != audioBook.id -> {
-                    this.audioBook = audioBook
-                    play()
-                }
-                !player.isPlaying && this.audioBook?.id == audioBook.id -> {
-                    this.audioBook = audioBook
-                    play()
-                }
-                else -> {
-                    intent.getIntExtra(ARG_TIME_SHIFT_PERCENTAGE, -1).let { percent ->
-                        if (percent > 0) { // percent is between 0 and 100
-                            player.seekTo(player.duration * percent / 100)
-                        }
-                    }
-                }
-
-            }
-
-            val command = CMD_PLAY
-            when (command) {
-                CMD_PLAY -> {
-                    when {
-                        this.audioBook == null -> {
-                            this.audioBook = audioBook
-                            play()
-                        }
-                        this.audioBook?.id == audioBook.id -> {
-                            if (player.isPlaying) {
-                                // Same audio book is already playing. Do nothing.
-                            } else {
-                                //This audio has been played and finished and user wants to play again
+                when (command) {
+                    CMD_PLAY -> {
+                        when {
+                            this.audioBook == null -> {
+                                this.audioBook = audioBook
+                                play()
+                            }
+                            this.audioBook?.id == audioBook.id -> {
+                                if (player.isPlaying) {
+                                    // Same audio book is already playing. Do nothing.
+                                } else {
+                                    //This audio has been played and finished and user wants to play again
+                                    this.audioBook = audioBook
+                                    play()
+                                }
+                            }
+                            else -> {
                                 this.audioBook = audioBook
                                 play()
                             }
                         }
-                        else -> {
-                            this.audioBook = audioBook
-                            play()
+                    }
+                    CMD_TOGGLE_PLAY_PAUSE -> {
+                        if (player.isPlaying) {
+                            player.pause()
+                        } else {
+                            player.start()
                         }
                     }
-                }
-                CMD_TOGGLE_PLAY_PAUSE -> {
-                    if (player.isPlaying) {
-                        player.pause()
-                    } else {
-                        player.start()
-                    }
-                }
-                CMD_TIME_SHIFT_TO_PERCENT -> {
-                    intent.getIntExtra(ARG_TIME_SHIFT_PERCENTAGE, -1).let { percent ->
-                        if (percent > 0) { // percent is between 0 and 100
-                            player.seekTo(player.duration * percent / 100)
+                    CMD_TIME_SHIFT_TO_PERCENT -> {
+                        intent.getIntExtra(ARG_TIME_SHIFT_PERCENTAGE, -1).let { percent ->
+                            if (percent > 0) { // percent is between 0 and 100
+                                player.seekTo((player.duration.toDouble() * percent / 100).toInt())
+                            }
                         }
                     }
-                }
-                CMD_TIME_SHIFT_WITH_AMOUNT -> {
-                    intent.getIntExtra(ARG_TIME_SHIFT_SECONDS, 0).let { seconds ->
-                        if (seconds != 0) { // amount is seconds. like: 30, -10
-                            player.seekTo((player.duration + seconds * 1E3).toInt())
+                    CMD_TIME_SHIFT_WITH_AMOUNT -> {
+                        intent.getIntExtra(ARG_TIME_SHIFT_SECONDS, 0).let { seconds ->
+                            if (seconds != 0) { // amount is seconds. like: 30, -10
+                                player.seekTo((player.duration + seconds * 1E3).toInt())
+                            }
                         }
                     }
                 }
@@ -258,10 +236,11 @@ class PlayerService : LifecycleService() {
             audioBook: AudioBook,
             isPlay: Boolean
         ): Intent =
-            Intent(callerContext, PlayerService::class.java).putExtra(
-                ARG_TOGGLE_PLAY_PAUSE,
-                CMD_TOGGLE_PLAY_PAUSE
-            ).putExtra(ARG_AUDIO_BOOK, audioBook)
+            Intent(callerContext, PlayerService::class.java)
+                .putExtra(
+                    ARG_COMMAND,
+                    CMD_TOGGLE_PLAY_PAUSE
+                ).putExtra(ARG_AUDIO_BOOK, audioBook)
                 .putExtra(ARG_TOGGLE_PLAY_PAUSE, isPlay)
 
         fun newIntentForTimeShiftToPercentage(
@@ -281,12 +260,13 @@ class PlayerService : LifecycleService() {
             audioBook: AudioBook,
             seconds: Int
         ): Intent =
-            Intent(callerContext, PlayerService::class.java).putExtra(
-                ARG_COMMAND,
-                CMD_TIME_SHIFT_WITH_AMOUNT
-            ).putExtra(
-                ARG_TIME_SHIFT_SECONDS,
-                seconds
-            )
+            Intent(callerContext, PlayerService::class.java)
+                .putExtra(
+                    ARG_COMMAND,
+                    CMD_TIME_SHIFT_WITH_AMOUNT
+                ).putExtra(
+                    ARG_TIME_SHIFT_SECONDS,
+                    seconds
+                )
     }
 }
