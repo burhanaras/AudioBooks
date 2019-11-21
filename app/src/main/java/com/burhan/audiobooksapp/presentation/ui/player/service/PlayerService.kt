@@ -64,12 +64,10 @@ class PlayerService : LifecycleService() {
                         }
                     }
                     CMD_TOGGLE_PLAY_PAUSE -> {
-                        if (player.isPlaying) {
-                            player.pause()
-                        } else if (player.currentPosition < player.duration){
-                            player.start()
-                        } else {
-                            play()
+                        when {
+                            player.isPlaying -> player.pause()
+                            player.currentPosition < player.duration -> player.start()
+                            else -> play()
                         }
                     }
                     CMD_TIME_SHIFT_TO_PERCENT -> {
