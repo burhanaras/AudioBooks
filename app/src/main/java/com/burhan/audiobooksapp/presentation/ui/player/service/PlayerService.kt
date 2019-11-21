@@ -66,8 +66,10 @@ class PlayerService : LifecycleService() {
                     CMD_TOGGLE_PLAY_PAUSE -> {
                         if (player.isPlaying) {
                             player.pause()
-                        } else {
+                        } else if (player.currentPosition < player.duration){
                             player.start()
+                        } else {
+                            play()
                         }
                     }
                     CMD_TIME_SHIFT_TO_PERCENT -> {
@@ -137,6 +139,7 @@ class PlayerService : LifecycleService() {
             player.setOnCompletionListener {
                 countDownTimer?.cancel()
                 countDownTimer = null
+
                 sendNowPlayingFinishBroadcast()
             }
             player.prepareAsync()
