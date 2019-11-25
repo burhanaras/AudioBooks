@@ -84,7 +84,7 @@ class NowPlayingActivity : AppCompatActivity() {
 
     companion object {
         private const val ARG_AUDIO_BOOK: String = "ARG_AUDIO_BOOK"
-        fun newIntent(callerActivity: Activity, audioBook: AudioBook) =
+        fun newIntent(callerActivity: Activity, audioBook: AudioBook?) =
             Intent(callerActivity, NowPlayingActivity::class.java).apply {
                 putExtra(ARG_AUDIO_BOOK, audioBook)
             }
