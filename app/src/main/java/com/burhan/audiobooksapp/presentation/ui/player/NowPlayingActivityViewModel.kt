@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -30,7 +29,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            intent.getParcelableExtra<NowPlayingInfo>("NowPlayingStartInfo")
+            intent.getParcelableExtra<NowPlayingInfo>(PlayerService.NowPlayingStartInfo)
                 ?.let { nowPlayingInfo ->
                     val sdo = NowPlayingSDO(
                         nowPlayingInfo.audioBook.name,
@@ -40,7 +39,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                     nowPlayingSDO.postValue(sdo)
                     isPlaying = true
                 }
-            intent.getParcelableExtra<NowPlayingInfo>("NowPlayingInfo")
+            intent.getParcelableExtra<NowPlayingInfo>(PlayerService.NowPlayingInfo)
                 ?.let { nowPlayingInfo ->
 
                     if (audioBook == null || audioBook?.id != nowPlayingInfo.audioBook.id) {
@@ -67,7 +66,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                     nowPlayingTimeInfoSDO.postValue(sdo)
                     isPlaying = nowPlayingInfo.playStatus == PlayStatus.PLAYING
                 }
-            intent.getParcelableExtra<NowPlayingInfo>("NowPlayingFinishInfo")
+            intent.getParcelableExtra<NowPlayingInfo>(PlayerService.NowPlayingFinishInfo)
                 ?.let { nowPlayingInfo ->
                     val progress = nowPlayingInfo.progressSc.toPrettyTimeInfoAsMMSS()
                     val duration = nowPlayingInfo.durationSc.toPrettyTimeInfoAsMMSS()
@@ -97,7 +96,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     }
 
     init {
-        val intentFilter = IntentFilter("com.burhan.audiobooks.player.info.receive")
+        val intentFilter = PlayerService.IntentFilter
         LocalBroadcastManager.getInstance(app).registerReceiver(broadcastReceiver, intentFilter)
     }
 
@@ -111,7 +110,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
         this.audioBook?.let { audioBook ->
             ContextCompat.startForegroundService(
                 app,
-                PlayerService.newIntentForTogglePlayPause(app, audioBook, isPlaying)
+                PlayerService.newIntentForTogglePlayPause(app, audioBook)
             )
         }
     }

@@ -2,6 +2,7 @@ package com.burhan.audiobooksapp.presentation.ui.player.service
 
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.MediaPlayer
 import android.os.CountDownTimer
 import android.os.IBinder
@@ -148,9 +149,9 @@ class PlayerService : LifecycleService() {
 
     private fun sendNowPlayingStartBroadcast() {
         this.audioBook?.let { audioBook ->
-            val intent = Intent("com.burhan.audiobooks.player.info.receive")
+            val intent = Intent(broadCastActionName)
             intent.putExtra(
-                "NowPlayingStartInfo",
+                NowPlayingStartInfo,
                 NowPlayingInfo(
                     audioBook,
                     0,
@@ -168,9 +169,9 @@ class PlayerService : LifecycleService() {
         playing: Boolean
     ) {
         this.audioBook?.let { audioBook ->
-            val intent = Intent("com.burhan.audiobooks.player.info.receive")
+            val intent = Intent(broadCastActionName)
             intent.putExtra(
-                "NowPlayingInfo", NowPlayingInfo(
+                NowPlayingInfo, NowPlayingInfo(
                     audioBook,
                     progress,
                     duration,
@@ -185,9 +186,9 @@ class PlayerService : LifecycleService() {
 
     private fun sendNowPlayingFinishBroadcast() {
         this.audioBook?.let { audioBook ->
-            val intent = Intent("com.burhan.audiobooks.player.info.receive")
+            val intent = Intent(broadCastActionName)
             intent.putExtra(
-                "NowPlayingFinishInfo",
+                NowPlayingFinishInfo,
                 NowPlayingInfo(
                     audioBook,
                     (player.duration / 1E3).toInt(),
@@ -213,6 +214,7 @@ class PlayerService : LifecycleService() {
     }
 
     companion object {
+
         val TAG: String = PlayerService::class.java.simpleName
 
         const val CMD_PLAY = "CMD_PLAY"
@@ -223,9 +225,15 @@ class PlayerService : LifecycleService() {
         private const val ARG_AUDIO_BOOK = "ARG_AUDIO_BOOK"
         private const val ARG_COMMAND = "ARG_COMMAND"
 
-        private const val ARG_TOGGLE_PLAY_PAUSE = "ARG_TOGGLE_PLAY_PAUSE"
         private const val ARG_TIME_SHIFT_PERCENTAGE = "ARG_TIME_SHIFT_PERCENTAGE"
         private const val ARG_TIME_SHIFT_SECONDS = "ARG_TIME_SHIFT_SECONDS"
+
+        const val NowPlayingStartInfo = "NowPlayingStartInfo"
+        const val NowPlayingInfo = "NowPlayingInfo"
+        const val NowPlayingFinishInfo = "NowPlayingFinishInfo"
+
+        private const val broadCastActionName = "com.burhan.audiobooks.player.info.receive"
+        val IntentFilter: IntentFilter = IntentFilter(broadCastActionName)
 
         fun newIntentForPlay(callerContext: Context, audioBook: AudioBook): Intent =
             Intent(callerContext, PlayerService::class.java)
@@ -234,15 +242,14 @@ class PlayerService : LifecycleService() {
 
         fun newIntentForTogglePlayPause(
             callerContext: Context,
-            audioBook: AudioBook,
-            isPlay: Boolean
+            audioBook: AudioBook
         ): Intent =
             Intent(callerContext, PlayerService::class.java)
                 .putExtra(
                     ARG_COMMAND,
                     CMD_TOGGLE_PLAY_PAUSE
                 ).putExtra(ARG_AUDIO_BOOK, audioBook)
-                .putExtra(ARG_TOGGLE_PLAY_PAUSE, isPlay)
+
 
         fun newIntentForTimeShiftToPercentage(
             callerContext: Context,
@@ -266,6 +273,9 @@ class PlayerService : LifecycleService() {
                     ARG_COMMAND,
                     CMD_TIME_SHIFT_WITH_AMOUNT
                 ).putExtra(
+                    ARG_AUDIO_BOOK, audioBook
+                )
+                .putExtra(
                     ARG_TIME_SHIFT_SECONDS,
                     seconds
                 )

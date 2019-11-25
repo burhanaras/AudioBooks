@@ -3,11 +3,10 @@ package com.burhan.audiobooksapp.presentation.ui.player.notification
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY_PAUSE
-import android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP
+import android.support.v4.media.session.PlaybackStateCompat.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -15,6 +14,7 @@ import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
+import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -27,17 +27,11 @@ class NotificationBuilder(private val context: Context) {
     private val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    private val playPauseAction = NotificationCompat.Action(
-        R.drawable.ic_play,
-        "Play/Pause",
-        MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_PLAY_PAUSE)
-    )
-
     private val stopPendingIntent =
         MediaButtonReceiver.buildMediaButtonPendingIntent(context, ACTION_STOP)
 
     private val mediaStyle = androidx.media.app.NotificationCompat.MediaStyle()
-        .setShowActionsInCompactView(0)
+        .setShowActionsInCompactView(0, 1)
         .setCancelButtonIntent(stopPendingIntent)
         .setShowCancelButton(true)
 
@@ -67,7 +61,8 @@ class NotificationBuilder(private val context: Context) {
                         setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         setStyle(mediaStyle)
                         setOnlyAlertOnce(true)
-                        addAction(playPauseAction)
+                        addAction(getTimeShiftBackward30SecsAction(audioBook))
+                        addAction(getPlayPauseToggleAction(audioBook))
                         setDeleteIntent(stopPendingIntent)
                     }.build()
 
@@ -97,6 +92,31 @@ class NotificationBuilder(private val context: Context) {
             }
             notificationManager.createNotificationChannel(channel)
         }
+    }
+
+    private fun getPlayPauseToggleAction(audioBook: AudioBook): NotificationCompat.Action {
+        return NotificationCompat.Action(
+            R.drawable.ic_play,
+            "Play/Pause",
+            PendingIntent.getService(
+                context, 0,
+                PlayerService.newIntentForTogglePlayPause(context, audioBook),
+                0
+            )
+        )
+    }
+
+    private fun getTimeShiftBackward30SecsAction(audioBook: AudioBook): NotificationCompat.Action {
+        return NotificationCompat.Action(
+            R.drawable.ic_replay_10,
+            "Rewind 10 sc.",
+            PendingIntent.getService(
+                context,
+                0,
+                PlayerService.newIntentForTogglePlayPause(context, audioBook),
+                0
+            )
+        )
     }
 
     companion object {

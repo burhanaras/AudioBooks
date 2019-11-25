@@ -1,5 +1,6 @@
 package com.burhan.audiobooksapp.presentation.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 /**
@@ -7,4 +8,10 @@ import androidx.lifecycle.ViewModel
  */
 class MainActivityViewModel : ViewModel() {
     var lastActiveFragmentTag: String? = null
+
+    var fabMiniPlayerVisibility : MutableLiveData<Boolean> = MutableLiveData()
+
+    init {
+        fabMiniPlayerVisibility.postValue(false)
+    }
 }
