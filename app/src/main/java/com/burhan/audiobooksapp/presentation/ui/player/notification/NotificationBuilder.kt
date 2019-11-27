@@ -6,7 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
-import android.support.v4.media.session.PlaybackStateCompat.*
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -37,6 +37,7 @@ class NotificationBuilder(private val context: Context) {
 
     fun buildMediaNotification(
         audioBook: AudioBook,
+        isPlaying: Boolean = true,
         callback: (notification: Notification) -> Unit
     ) {
         if (shouldCreateNotificationChannel()) {
@@ -61,8 +62,11 @@ class NotificationBuilder(private val context: Context) {
                         setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         setStyle(mediaStyle)
                         setOnlyAlertOnce(true)
-                        addAction(getTimeShiftBackward30SecsAction(audioBook))
-                        addAction(getPlayPauseToggleAction(audioBook))
+                        addAction(getTimeShiftBackward10SecsAction(audioBook))
+                        addAction(
+                            if (isPlaying) getPauseAction(audioBook)
+                            else getPlayAction(audioBook)
+                        )
                         setDeleteIntent(stopPendingIntent)
                     }.build()
 
@@ -94,25 +98,37 @@ class NotificationBuilder(private val context: Context) {
         }
     }
 
-    private fun getPlayPauseToggleAction(audioBook: AudioBook): NotificationCompat.Action {
+    private fun getPlayAction(audioBook: AudioBook): NotificationCompat.Action {
         return NotificationCompat.Action(
             R.drawable.ic_play,
-            "Play/Pause",
+            "Play",
             PendingIntent.getService(
-                context, 0,
+                context, 10,
                 PlayerService.newIntentForTogglePlayPause(context, audioBook),
                 0
             )
         )
     }
 
-    private fun getTimeShiftBackward30SecsAction(audioBook: AudioBook): NotificationCompat.Action {
+    private fun getTimeShiftBackward10SecsAction(audioBook: AudioBook): NotificationCompat.Action {
         return NotificationCompat.Action(
             R.drawable.ic_replay_10,
             "Rewind 10 sc.",
             PendingIntent.getService(
                 context,
-                0,
+                11,
+                PlayerService.newIntentForTimeShiftWithAmount(context, audioBook, -10),
+                0
+            )
+        )
+    }
+
+    private fun getPauseAction(audioBook: AudioBook): NotificationCompat.Action {
+        return NotificationCompat.Action(
+            R.drawable.ic_pause,
+            "Pause",
+            PendingIntent.getService(
+                context, 12,
                 PlayerService.newIntentForTogglePlayPause(context, audioBook),
                 0
             )

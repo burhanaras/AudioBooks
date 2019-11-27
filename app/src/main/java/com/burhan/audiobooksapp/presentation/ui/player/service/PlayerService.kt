@@ -81,14 +81,18 @@ class PlayerService : LifecycleService() {
                     CMD_TIME_SHIFT_WITH_AMOUNT -> {
                         intent.getIntExtra(ARG_TIME_SHIFT_SECONDS, 0).let { seconds ->
                             if (seconds != 0) { // amount is seconds. like: 30, -10
-                                player.seekTo((player.duration + seconds * 1E3).toInt())
+                                //TODO: Although we put a negative amount here, it always returns positive amount. So we put minus instead of plus. That is a problem to be solved, otherwise we can't go further with amount
+                                player.seekTo((player.currentPosition - (seconds * 1E3)).toInt())
                             }
                         }
                     }
                 }
             }
 
-            NotificationBuilder(this).buildMediaNotification(audioBook) { notification ->
+            NotificationBuilder(this).buildMediaNotification(
+                audioBook,
+                player.isPlaying
+            ) { notification ->
                 startForeground(99, notification)
             }
         }
