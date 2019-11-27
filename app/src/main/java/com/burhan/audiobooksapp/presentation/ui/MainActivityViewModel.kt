@@ -7,6 +7,8 @@ import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingInfo
+import com.burhan.audiobooksapp.presentation.ui.player.model.PlayStatus
 import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
 
 /**
@@ -15,15 +17,24 @@ import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
 class MainActivityViewModel(private val app: Application) : AndroidViewModel(app) {
     var lastActiveFragmentTag: String? = null
 
-    var fabMiniPlayerVisibility: MutableLiveData<Boolean> = MutableLiveData()
+    var fabMiniEqualizerVisibility: MutableLiveData<Pair<Boolean, Boolean>> =
+        MutableLiveData() // (Visibility, isAnimating)
+
 
     init {
-        fabMiniPlayerVisibility.postValue(false)
+        fabMiniEqualizerVisibility.postValue(Pair(first = false, second = false))
         val intentFilter = PlayerService.IntentFilter
         LocalBroadcastManager.getInstance(app).registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
-                if (fabMiniPlayerVisibility.value == false)
-                    fabMiniPlayerVisibility.postValue(true)
+            override fun onReceive(context: Context?, intent: Intent?) {
+                intent?.getParcelableExtra<NowPlayingInfo>(PlayerService.NowPlayingInfo)
+                    ?.let { nowPlayingInfo ->
+
+                        val newAnimatingStatus = nowPlayingInfo.playStatus == PlayStatus.PLAYING
+                        val currentAnimatingStatus = fabMiniEqualizerVisibility.value?.second
+
+                        if (newAnimatingStatus != currentAnimatingStatus)
+                            fabMiniEqualizerVisibility.postValue(Pair(true, newAnimatingStatus))
+                    }
             }
         }, intentFilter)
     }

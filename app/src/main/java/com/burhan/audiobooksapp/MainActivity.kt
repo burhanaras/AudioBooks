@@ -1,6 +1,7 @@
 package com.burhan.audiobooksapp
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -72,13 +73,17 @@ class MainActivity : AppCompatActivity() {
 
         setObservers()
         fabMiniPlayer.setOnClickListener { startActivity(NowPlayingActivity.newIntent(this, null)) }
+
     }
 
     private fun setObservers() {
-        viewModel.fabMiniPlayerVisibility.observe(this, Observer {
-            it?.let { visible ->
-                if (visible) fabMiniPlayer.show()
-                else fabMiniPlayer.hide()
+        viewModel.fabMiniEqualizerVisibility.observe(this, Observer {
+            it?.let { visibilityAndAnimatingStatus ->
+                if (visibilityAndAnimatingStatus.first) fabMiniPlayer.visibility = View.VISIBLE
+                else fabMiniPlayer.visibility = View.GONE
+
+                if (visibilityAndAnimatingStatus.second && visibilityAndAnimatingStatus.first) equalizer_view.animateBars()
+                else equalizer_view.stopBars()
             }
         })
     }
