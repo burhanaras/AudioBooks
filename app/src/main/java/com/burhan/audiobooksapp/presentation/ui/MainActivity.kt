@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp
+package com.burhan.audiobooksapp.presentation.ui
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.burhan.audiobooksapp.presentation.ui.MainActivityViewModel
+import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.presentation.ui.dashboard.DashboardFragment
 import com.burhan.audiobooksapp.presentation.ui.home.HomeFragment
 import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivity
