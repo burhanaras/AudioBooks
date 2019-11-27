@@ -72,18 +72,22 @@ class MainActivity : AppCompatActivity() {
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
         setObservers()
-        fabMiniPlayer.setOnClickListener { startActivity(NowPlayingActivity.newIntent(this, null)) }
+        fabMiniPlayer.setOnClickListener { viewModel.onClickMiniEqualizedFab() }
 
     }
 
     private fun setObservers() {
+        viewModel.goToPlayingNowActivity.observe(this, Observer {
+            it?.let { audioBook -> startActivity(NowPlayingActivity.newIntent(this, audioBook)) }
+        })
+
         viewModel.fabMiniEqualizerVisibility.observe(this, Observer {
             it?.let { visibilityAndAnimatingStatus ->
                 if (visibilityAndAnimatingStatus.first) fabMiniPlayer.visibility = View.VISIBLE
                 else fabMiniPlayer.visibility = View.GONE
 
-                if (visibilityAndAnimatingStatus.second && visibilityAndAnimatingStatus.first) equalizer_view.animateBars()
-                else equalizer_view.stopBars()
+                if (visibilityAndAnimatingStatus.second && visibilityAndAnimatingStatus.first) miniEqualizer.animateBars()
+                else miniEqualizer.stopBars()
             }
         })
     }

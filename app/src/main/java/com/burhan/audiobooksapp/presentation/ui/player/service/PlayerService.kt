@@ -95,6 +95,7 @@ class PlayerService : LifecycleService() {
             ) { notification ->
                 startForeground(99, notification)
             }
+
         }
 
         return START_STICKY

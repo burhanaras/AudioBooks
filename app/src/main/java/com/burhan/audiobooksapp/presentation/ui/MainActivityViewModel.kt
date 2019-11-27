@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingInfo
 import com.burhan.audiobooksapp.presentation.ui.player.model.PlayStatus
 import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
@@ -16,10 +17,11 @@ import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
  */
 class MainActivityViewModel(private val app: Application) : AndroidViewModel(app) {
     var lastActiveFragmentTag: String? = null
+    var currentAudioBook: AudioBook? = null
 
     var fabMiniEqualizerVisibility: MutableLiveData<Pair<Boolean, Boolean>> =
         MutableLiveData() // (Visibility, isAnimating)
-
+    var goToPlayingNowActivity: MutableLiveData<AudioBook> = MutableLiveData()
 
     init {
         fabMiniEqualizerVisibility.postValue(Pair(first = false, second = false))
@@ -29,6 +31,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
                 intent?.getParcelableExtra<NowPlayingInfo>(PlayerService.NowPlayingInfo)
                     ?.let { nowPlayingInfo ->
 
+                        currentAudioBook = nowPlayingInfo.audioBook
                         val newAnimatingStatus = nowPlayingInfo.playStatus == PlayStatus.PLAYING
                         val currentAnimatingStatus = fabMiniEqualizerVisibility.value?.second
 
@@ -37,5 +40,9 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
                     }
             }
         }, intentFilter)
+    }
+
+    fun onClickMiniEqualizedFab() {
+        goToPlayingNowActivity.postValue(currentAudioBook)
     }
 }
