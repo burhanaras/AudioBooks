@@ -26,7 +26,7 @@ data class PlayerPlayList(private var audioBooks: MutableList<AudioBook> = mutab
     }
 
     fun isEmpty(): Boolean {
-        return audioBooks.size > 0
+        return audioBooks.size == 0
     }
 
     fun export() =
