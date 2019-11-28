@@ -5,9 +5,7 @@ import com.burhan.audiobooksapp.domain.model.AudioBook
 /**
  * Developed by tcbaras on 2019-11-28.
  */
-class PlayerPlayList {
-
-    private var audioBooks: MutableList<AudioBook> = mutableListOf()
+data class PlayerPlayList(private var audioBooks: MutableList<AudioBook> = mutableListOf()) {
     private var currentIndex = 0
 
     fun hasNext(): Boolean {
@@ -30,6 +28,9 @@ class PlayerPlayList {
     fun isEmpty(): Boolean {
         return audioBooks.size > 0
     }
+
+    fun export() =
+        PlayList(audioBooks = audioBooks.toTypedArray()).apply { currentInd = currentIndex }
 
     companion object {
         fun newInstance(playList: PlayList): PlayerPlayList {

@@ -9,7 +9,9 @@ import kotlinx.android.parcel.Parcelize
  */
 
 @Parcelize
-data class PlayList ( val audioBooks: Array<AudioBook> = arrayOf()) : Parcelable {
+data class PlayList(val audioBooks: Array<AudioBook> = arrayOf()) : Parcelable {
+
+    internal var currentInd: Int = 0
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -2,6 +2,7 @@ package com.burhan.audiobooksapp.presentation.ui.player.model
 
 import android.os.Parcelable
 import com.burhan.audiobooksapp.domain.model.AudioBook
+import com.burhan.audiobooksapp.presentation.ui.player.service.PlayList
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -34,5 +35,6 @@ data class NowPlayingInfo(
     val audioBook: AudioBook,
     val progressSc: Int,
     val durationSc: Int,
-    val playStatus: PlayStatus
+    val playStatus: PlayStatus,
+    val playList: PlayList
 ) : Parcelable

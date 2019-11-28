@@ -18,7 +18,7 @@ import kotlin.math.roundToInt
 
 class PlayerService : LifecycleService() {
 
-    private var playerPlayList = PlayerPlayList()
+    private var playerPlayList = PlayerPlayList(arrayListOf())
     private lateinit var player: MediaPlayer
     private var countDownTimer: CountDownTimer? = null
 
@@ -39,9 +39,7 @@ class PlayerService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         Log.d(TAG, "onStartCommand()")
 
-
         intent.getStringExtra(ARG_COMMAND)?.let { command ->
-
             when (command) {
                 CMD_PLAY -> {
                     intent.getParcelableExtra<PlayList>(ARG_AUDIO_BOOK)?.let { playList ->
@@ -186,7 +184,8 @@ class PlayerService : LifecycleService() {
                     audioBook,
                     0,
                     (player.duration / 1E3).toInt(),
-                    PlayStatus.PLAYING
+                    PlayStatus.PLAYING,
+                    playerPlayList.export()
                 )
             )
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
@@ -205,7 +204,8 @@ class PlayerService : LifecycleService() {
                     audioBook,
                     progress,
                     duration,
-                    if (playing) PlayStatus.PLAYING else PlayStatus.IDLE
+                    if (playing) PlayStatus.PLAYING else PlayStatus.IDLE,
+                    playerPlayList.export()
                 )
             )
             LocalBroadcastManager.getInstance(this@PlayerService).sendBroadcast(intent)
@@ -223,7 +223,8 @@ class PlayerService : LifecycleService() {
                     audioBook,
                     (player.duration / 1E3).toInt(),
                     (player.duration / 1E3).toInt(),
-                    PlayStatus.IDLE
+                    PlayStatus.IDLE,
+                    playerPlayList.export()
                 )
             )
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
