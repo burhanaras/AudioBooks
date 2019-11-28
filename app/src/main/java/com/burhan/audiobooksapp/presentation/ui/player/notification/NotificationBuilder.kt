@@ -62,10 +62,10 @@ class NotificationBuilder(private val context: Context) {
                         setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         setStyle(mediaStyle)
                         setOnlyAlertOnce(true)
-                        addAction(getTimeShiftBackward10SecsAction(audioBook))
+                        addAction(getTimeShiftBackward10SecsAction())
                         addAction(
-                            if (isPlaying) getPauseAction(audioBook)
-                            else getPlayAction(audioBook)
+                            if (isPlaying) getPauseAction()
+                            else getPlayAction()
                         )
                         setDeleteIntent(stopPendingIntent)
                     }.build()
@@ -98,38 +98,38 @@ class NotificationBuilder(private val context: Context) {
         }
     }
 
-    private fun getPlayAction(audioBook: AudioBook): NotificationCompat.Action {
+    private fun getPlayAction(): NotificationCompat.Action {
         return NotificationCompat.Action(
             R.drawable.ic_play,
             "Play",
             PendingIntent.getService(
                 context, 10,
-                PlayerService.newIntentForTogglePlayPause(context, audioBook),
+                PlayerService.newIntentForTogglePlayPause(context),
                 0
             )
         )
     }
 
-    private fun getTimeShiftBackward10SecsAction(audioBook: AudioBook): NotificationCompat.Action {
+    private fun getTimeShiftBackward10SecsAction(): NotificationCompat.Action {
         return NotificationCompat.Action(
             R.drawable.ic_replay_10,
             "Rewind 10 sc.",
             PendingIntent.getService(
                 context,
                 11,
-                PlayerService.newIntentForTimeShiftWithAmount(context, audioBook, -10),
+                PlayerService.newIntentForTimeShiftWithAmount(context, -10),
                 0
             )
         )
     }
 
-    private fun getPauseAction(audioBook: AudioBook): NotificationCompat.Action {
+    private fun getPauseAction(): NotificationCompat.Action {
         return NotificationCompat.Action(
             R.drawable.ic_pause,
             "Pause",
             PendingIntent.getService(
                 context, 12,
-                PlayerService.newIntentForTogglePlayPause(context, audioBook),
+                PlayerService.newIntentForTogglePlayPause(context),
                 0
             )
         )

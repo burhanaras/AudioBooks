@@ -1,5 +1,6 @@
 package com.burhan.audiobooksapp.presentation.ui.player.service
 
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -18,6 +19,7 @@ import kotlin.math.roundToInt
 
 class PlayerService : LifecycleService() {
 
+    private var playerPlayList = PlayerPlayList()
     private var audioBook: AudioBook? = null
     private lateinit var player: MediaPlayer
     private var countDownTimer: CountDownTimer? = null
@@ -39,14 +41,24 @@ class PlayerService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         Log.d(TAG, "onStartCommand()")
 
-        intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
-            intent.getStringExtra(ARG_COMMAND)?.let { command ->
 
-                when (command) {
-                    CMD_PLAY -> {
+        intent.getStringExtra(ARG_COMMAND)?.let { command ->
+
+
+            when (command) {
+                CMD_PLAY -> {
+                    intent.getParcelableExtra<PlayList>(ARG_AUDIO_BOOK)?.let { playList ->
+
+                        if (playList.audioBooks.isEmpty()) {
+                            return Service.START_STICKY
+                        }
+
+                        val audioBook = playList.audioBooks.first()
+
                         when {
                             this.audioBook == null -> {
                                 this.audioBook = audioBook
+                                this.playerPlayList = PlayerPlayList.newInstance(playList)
                                 play()
                             }
                             this.audioBook?.id == audioBook.id -> {
@@ -55,50 +67,61 @@ class PlayerService : LifecycleService() {
                                 } else {
                                     //This audio has been played and finished and user wants to play again
                                     this.audioBook = audioBook
+                                    this.playerPlayList = PlayerPlayList.newInstance(playList)
                                     play()
                                 }
                             }
                             else -> {
                                 this.audioBook = audioBook
+                                this.playerPlayList = PlayerPlayList.newInstance(playList)
                                 play()
                             }
                         }
                     }
-                    CMD_TOGGLE_PLAY_PAUSE -> {
-                        when {
-                            player.isPlaying -> player.pause()
-                            player.currentPosition < player.duration -> player.start()
-                            else -> play()
-                        }
+
+                }
+                CMD_TOGGLE_PLAY_PAUSE -> {
+                    when {
+                        player.isPlaying -> player.pause()
+                        player.currentPosition < player.duration -> player.start()
+                        else -> play()
                     }
-                    CMD_TIME_SHIFT_TO_PERCENT -> {
-                        intent.getIntExtra(ARG_TIME_SHIFT_PERCENTAGE, -1).let { percent ->
-                            if (percent > 0) { // percent is between 0 and 100
-                                player.seekTo((player.duration.toDouble() * percent / 100).toInt())
-                            }
-                        }
-                    }
-                    CMD_TIME_SHIFT_WITH_AMOUNT -> {
-                        intent.getIntExtra(ARG_TIME_SHIFT_SECONDS, 0).let { seconds ->
-                            if (seconds != 0) { // amount is seconds. like: 30, -10
-                                //TODO: Although we put a negative amount here, it always returns positive amount. So we put minus instead of plus. That is a problem to be solved, otherwise we can't go further with amount
-                                player.seekTo((player.currentPosition - (seconds * 1E3)).toInt())
-                            }
+                }
+                CMD_TIME_SHIFT_TO_PERCENT -> {
+                    intent.getIntExtra(ARG_TIME_SHIFT_PERCENTAGE, -1).let { percent ->
+                        if (percent > 0) { // percent is between 0 and 100
+                            player.seekTo((player.duration.toDouble() * percent / 100).toInt())
                         }
                     }
                 }
+                CMD_TIME_SHIFT_WITH_AMOUNT -> {
+                    intent.getIntExtra(ARG_TIME_SHIFT_SECONDS, 0).let { seconds ->
+                        if (seconds != 0) { // amount is seconds. like: 30, -10
+                            //TODO: Although we put a negative amount here, it always returns positive amount. So we put minus instead of plus. That is a problem to be solved, otherwise we can't go further with amount
+                            player.seekTo((player.currentPosition + (seconds * 1E3)).toInt())
+                        }
+                    }
+                }
+                else -> {
+                    Log.e(TAG, "Command not recognised!")
+                }
             }
+        }
 
+        updateNotification()
+
+        return START_STICKY
+    }
+
+    private fun updateNotification() {
+        this.audioBook?.let { audioBook ->
             NotificationBuilder(this).buildMediaNotification(
                 audioBook,
                 player.isPlaying
             ) { notification ->
                 startForeground(99, notification)
             }
-
         }
-
-        return START_STICKY
     }
 
     private fun play() {
@@ -117,6 +140,7 @@ class PlayerService : LifecycleService() {
                 it.start()
 
                 sendNowPlayingStartBroadcast()
+                updateNotification()
 
                 countDownTimer?.cancel()
                 countDownTimer = object : CountDownTimer(player.duration.toLong(), 1000) {
@@ -145,6 +169,14 @@ class PlayerService : LifecycleService() {
                 countDownTimer = null
 
                 sendNowPlayingFinishBroadcast()
+
+                if (playerPlayList.hasNext()) {
+                    val nextAudioBook = playerPlayList.goToNext()
+                    this@PlayerService.audioBook = nextAudioBook
+                    play()
+                } else {
+                    updateNotification()
+                }
             }
             player.prepareAsync()
 
@@ -240,45 +272,38 @@ class PlayerService : LifecycleService() {
         private const val broadCastActionName = "com.burhan.audiobooks.player.info.receive"
         val IntentFilter: IntentFilter = IntentFilter(broadCastActionName)
 
-        fun newIntentForPlay(callerContext: Context, audioBook: AudioBook): Intent =
+        fun newIntentForPlay(callerContext: Context, audioBooks: PlayList): Intent =
             Intent(callerContext, PlayerService::class.java)
                 .putExtra(ARG_COMMAND, CMD_PLAY)
-                .putExtra(ARG_AUDIO_BOOK, audioBook)
+                .putExtra(ARG_AUDIO_BOOK, audioBooks)
 
         fun newIntentForTogglePlayPause(
-            callerContext: Context,
-            audioBook: AudioBook
-        ): Intent =
+            callerContext: Context): Intent =
             Intent(callerContext, PlayerService::class.java)
                 .putExtra(
                     ARG_COMMAND,
                     CMD_TOGGLE_PLAY_PAUSE
-                ).putExtra(ARG_AUDIO_BOOK, audioBook)
+                )
 
 
         fun newIntentForTimeShiftToPercentage(
             callerContext: Context,
-            audioBook: AudioBook,
             progress: Int
         ): Intent =
             Intent(
                 callerContext,
                 PlayerService::class.java
             ).putExtra(ARG_COMMAND, CMD_TIME_SHIFT_TO_PERCENT)
-                .putExtra(ARG_AUDIO_BOOK, audioBook)
                 .putExtra(ARG_TIME_SHIFT_PERCENTAGE, progress)
 
         fun newIntentForTimeShiftWithAmount(
             callerContext: Context,
-            audioBook: AudioBook,
             seconds: Int
         ): Intent =
             Intent(callerContext, PlayerService::class.java)
                 .putExtra(
                     ARG_COMMAND,
                     CMD_TIME_SHIFT_WITH_AMOUNT
-                ).putExtra(
-                    ARG_AUDIO_BOOK, audioBook
                 )
                 .putExtra(
                     ARG_TIME_SHIFT_SECONDS,
