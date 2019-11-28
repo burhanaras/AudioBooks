@@ -1,19 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/activity_audio_book_detail"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ui.audiobookdetail.AudioBookDetailActivity">
+        android:padding="@dimen/text_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".presentation.ui.audiobookdetail.AudioBookDetailActivity"
+        tools:showIn="@layout/activity_audio_book_detail">
 
-    <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvAudioBookDetailDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
-            android:text="@string/large_text"/>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/text_margin">
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAudioBookDetailName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAudioBookDetailAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/text_margin"
+                android:textSize="16sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvAudioBookDetailDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/large_text"
+                android:textSize="16sp" />
+
+    </LinearLayout>
+
 
 </androidx.core.widget.NestedScrollView>

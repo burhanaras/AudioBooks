@@ -10,7 +10,6 @@ import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
 import com.burhan.audiobooksapp.presentation.core.extension.setSingleClickListener
 import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivity
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_audio_book_detail.*
 import kotlinx.android.synthetic.main.content_audio_book_detail.*
 import kotlin.math.abs
@@ -27,6 +26,8 @@ class AudioBookDetailActivity : AppCompatActivity() {
         intent.getParcelableExtra<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
             tvAudioBookDetailTitle.text = audioBook.name
             ivAudioBookDetailImage.loadFromUrl(audioBook.imageUrl)
+            tvAudioBookDetailName.text = audioBook.name
+            tvAudioBookDetailAuthor.text = audioBook.author
             tvAudioBookDetailDescription.text = audioBook.description
 
             fab.setSingleClickListener {
