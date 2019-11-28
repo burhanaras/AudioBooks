@@ -125,7 +125,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
 
     fun togglePlayPause() {
         isPlaying = !isPlaying
-        this.audioBook?.let { audioBook ->
+        this.audioBook?.let {
             ContextCompat.startForegroundService(
                 app,
                 PlayerService.newIntentForTogglePlayPause(app)
