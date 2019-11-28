@@ -11,7 +11,6 @@ import android.os.PowerManager
 import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingInfo
 import com.burhan.audiobooksapp.presentation.ui.player.model.PlayStatus
 import com.burhan.audiobooksapp.presentation.ui.player.notification.NotificationBuilder
@@ -20,7 +19,6 @@ import kotlin.math.roundToInt
 class PlayerService : LifecycleService() {
 
     private var playerPlayList = PlayerPlayList()
-    private var audioBook: AudioBook? = null
     private lateinit var player: MediaPlayer
     private var countDownTimer: CountDownTimer? = null
 
@@ -44,7 +42,6 @@ class PlayerService : LifecycleService() {
 
         intent.getStringExtra(ARG_COMMAND)?.let { command ->
 
-
             when (command) {
                 CMD_PLAY -> {
                     intent.getParcelableExtra<PlayList>(ARG_AUDIO_BOOK)?.let { playList ->
@@ -56,23 +53,20 @@ class PlayerService : LifecycleService() {
                         val audioBook = playList.audioBooks.first()
 
                         when {
-                            this.audioBook == null -> {
-                                this.audioBook = audioBook
+                            this.playerPlayList.isEmpty() -> {
                                 this.playerPlayList = PlayerPlayList.newInstance(playList)
                                 play()
                             }
-                            this.audioBook?.id == audioBook.id -> {
+                            this.playerPlayList.getCurrent()?.id == audioBook.id -> {
                                 if (player.isPlaying) {
                                     // Same audio book is already playing. Do nothing.
                                 } else {
                                     //This audio has been played and finished and user wants to play again
-                                    this.audioBook = audioBook
                                     this.playerPlayList = PlayerPlayList.newInstance(playList)
                                     play()
                                 }
                             }
                             else -> {
-                                this.audioBook = audioBook
                                 this.playerPlayList = PlayerPlayList.newInstance(playList)
                                 play()
                             }
@@ -114,7 +108,7 @@ class PlayerService : LifecycleService() {
     }
 
     private fun updateNotification() {
-        this.audioBook?.let { audioBook ->
+        this.playerPlayList.getCurrent()?.let { audioBook ->
             NotificationBuilder(this).buildMediaNotification(
                 audioBook,
                 player.isPlaying
@@ -126,7 +120,7 @@ class PlayerService : LifecycleService() {
 
     private fun play() {
 
-        this.audioBook?.let { audioBook ->
+        this.playerPlayList.getCurrent()?.let { audioBook ->
 
             if (::player.isInitialized) {
                 player.stop()
@@ -171,8 +165,7 @@ class PlayerService : LifecycleService() {
                 sendNowPlayingFinishBroadcast()
 
                 if (playerPlayList.hasNext()) {
-                    val nextAudioBook = playerPlayList.goToNext()
-                    this@PlayerService.audioBook = nextAudioBook
+                    playerPlayList.goToNext()
                     play()
                 } else {
                     updateNotification()
@@ -185,7 +178,7 @@ class PlayerService : LifecycleService() {
     }
 
     private fun sendNowPlayingStartBroadcast() {
-        this.audioBook?.let { audioBook ->
+        this.playerPlayList.getCurrent()?.let { audioBook ->
             val intent = Intent(broadCastActionName)
             intent.putExtra(
                 NowPlayingStartInfo,
@@ -205,7 +198,7 @@ class PlayerService : LifecycleService() {
         duration: Int,
         playing: Boolean
     ) {
-        this.audioBook?.let { audioBook ->
+        this.playerPlayList.getCurrent()?.let { audioBook ->
             val intent = Intent(broadCastActionName)
             intent.putExtra(
                 NowPlayingInfo, NowPlayingInfo(
@@ -222,7 +215,7 @@ class PlayerService : LifecycleService() {
     }
 
     private fun sendNowPlayingFinishBroadcast() {
-        this.audioBook?.let { audioBook ->
+        this.playerPlayList.getCurrent()?.let { audioBook ->
             val intent = Intent(broadCastActionName)
             intent.putExtra(
                 NowPlayingFinishInfo,
@@ -278,7 +271,8 @@ class PlayerService : LifecycleService() {
                 .putExtra(ARG_AUDIO_BOOK, audioBooks)
 
         fun newIntentForTogglePlayPause(
-            callerContext: Context): Intent =
+            callerContext: Context
+        ): Intent =
             Intent(callerContext, PlayerService::class.java)
                 .putExtra(
                     ARG_COMMAND,

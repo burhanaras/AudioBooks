@@ -22,13 +22,20 @@ class PlayerPlayList {
         return null
     }
 
+    fun getCurrent(): AudioBook? {
+        if (audioBooks.size <= currentIndex) return null
+        return audioBooks[currentIndex]
+    }
+
+    fun isEmpty(): Boolean {
+        return audioBooks.size > 0
+    }
+
     companion object {
         fun newInstance(playList: PlayList): PlayerPlayList {
-            val playerPlayList = PlayerPlayList()
-            playerPlayList.audioBooks.clear()
-            playerPlayList.audioBooks.addAll(playList.audioBooks)
-
-            return playerPlayList
+            return PlayerPlayList().apply {
+                audioBooks.addAll(playList.audioBooks)
+            }
         }
     }
 }
