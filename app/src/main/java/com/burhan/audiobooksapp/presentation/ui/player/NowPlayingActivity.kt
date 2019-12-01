@@ -34,8 +34,16 @@ class NowPlayingActivity : AppCompatActivity() {
         }
     }
 
-    private fun initUI() {
+    private fun requestAudioFocus() {
+        val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        lifecycle.addObserver(AudioFocusObserver(audioManager))
+    }
 
+    private fun initViewModels() =
+        ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
+
+
+    private fun initUI() {
         ivNowPlayingPlayPauseButton.setSingleClickListener {
             viewModel.togglePlayPause()
         }
@@ -73,14 +81,6 @@ class NowPlayingActivity : AppCompatActivity() {
             }
         })
     }
-
-    private fun requestAudioFocus() {
-        val audioManager: AudioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        lifecycle.addObserver(AudioFocusObserver(audioManager))
-    }
-
-    private fun initViewModels() =
-        ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
 
     companion object {
         private const val ARG_AUDIO_BOOK: String = "ARG_AUDIO_BOOK"

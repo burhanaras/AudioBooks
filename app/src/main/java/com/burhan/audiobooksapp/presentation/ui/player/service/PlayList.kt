@@ -2,6 +2,7 @@ package com.burhan.audiobooksapp.presentation.ui.player.service
 
 import android.os.Parcelable
 import com.burhan.audiobooksapp.domain.model.AudioBook
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -11,7 +12,14 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class PlayList(val audioBooks: Array<AudioBook> = arrayOf()) : Parcelable {
 
+    @IgnoredOnParcel
     internal var currentInd: Int = 0
+
+    fun get(position: Int): AudioBook? {
+        return if (position < audioBooks.size)
+            audioBooks[position]
+        else null
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -95,4 +95,10 @@
     </string>
     <string name="action_settings">Settings</string>
     <string name="notification_channel_description">Shows what audiobook is currently playin</string>
+    <string name="title_activity_deneme">DenemeActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

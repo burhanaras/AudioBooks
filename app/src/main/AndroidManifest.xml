@@ -13,22 +13,27 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity
+                android:name=".presentation.ui.deneme.DenemeActivity"
+                android:label="@string/title_activity_deneme"
+                android:theme="@style/AppTheme.NoActionBar"></activity>
+
         <receiver
                 android:name=".presentation.ui.player.broadcast.PlayerInfoReceiver"
                 android:enabled="true"
-                android:exported="true"></receiver>
+                android:exported="true" />
 
         <service
                 android:name=".presentation.ui.player.service.PlayerService"
                 android:enabled="true"
-                android:exported="false"></service>
+                android:exported="false" />
 
         <activity
                 android:name=".presentation.ui.player.NowPlayingActivity"
-                android:launchMode="singleTop"></activity>
+                android:launchMode="singleTop" />
         <activity
                 android:name=".presentation.ui.audiobookdetail.AudioBookDetailActivity"
-                android:theme="@style/AppTheme.NoActionBar"></activity>
+                android:theme="@style/AppTheme.NoActionBar" />
         <activity
                 android:name=".presentation.ui.MainActivity"
                 android:configChanges="orientation|keyboardHidden"

@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.presentation.ui.dashboard.DashboardFragment
 import com.burhan.audiobooksapp.presentation.ui.home.HomeFragment
-import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivity
+import com.burhan.audiobooksapp.presentation.ui.nowplaying.NowPlayingBottomSheetFragment
 import com.burhan.audiobooksapp.presentation.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
@@ -78,7 +78,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setObservers() {
         viewModel.goToPlayingNowActivity.observe(this, Observer {
-            it?.let { audioBook -> startActivity(NowPlayingActivity.newIntent(this, audioBook)) }
+            //    it?.let { audioBook -> startActivity(NowPlayingActivity.newIntent(this, audioBook)) }
+
+            val bottomSheet = NowPlayingBottomSheetFragment.newInstance(it)
+            bottomSheet.show(
+                supportFragmentManager,
+                NowPlayingBottomSheetFragment.TAG
+            )
         })
 
         viewModel.fabMiniEqualizerVisibility.observe(this, Observer {
