@@ -31,7 +31,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:clipToPadding="false"
-                    tools:listitem="@layout/item_audiobook" />
+                    tools:listitem="@layout/item_audiobook_row_list" />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

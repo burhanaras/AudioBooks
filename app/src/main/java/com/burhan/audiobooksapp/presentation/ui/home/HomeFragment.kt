@@ -39,7 +39,8 @@ class HomeFragment : Fragment() {
         viewModel.loadData()
     }
 
-    private fun initViewModels() = ViewModelProviders.of(activity!!).get(HomeFragmentViewModel::class.java)
+    private fun initViewModels() =
+        ViewModelProviders.of(activity!!).get(HomeFragmentViewModel::class.java)
 
     private fun setRecyclerView() {
         rvHomeCategories.setHasFixedSize(true)

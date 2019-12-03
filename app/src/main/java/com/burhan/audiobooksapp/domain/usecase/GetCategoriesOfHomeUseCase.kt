@@ -159,18 +159,18 @@ class GetCategoriesOfHomeUseCase {
             audioBooks = audioBooks.shuffled()
         )
 
-        return listOf(
-            category0,
-            category1,
-            category2,
-            category3,
-            category4,
-            category5,
-            category6,
-            category7,
-            category8,
-            category9
-        )
+        var categories: MutableList<Category> = mutableListOf()
+        for (index in 0..40) {
+            val category = Category(
+                id = "9",
+                name = "The Best of 2019",
+                imageUrl = "https://m.media-amazon.com/images/G/01/Audible/en_US/images/creative/CO-933_RP_ListeningClub_9_25_19_HP_Banner_DSK._CB1569250349_.png",
+                audioBooks = audioBooks.shuffled() + audioBooks.shuffled() + audioBooks.shuffled()
+            )
+            categories.add(category)
+        }
+
+        return categories.shuffled()
     }
 
 
