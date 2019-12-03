@@ -138,4 +138,8 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
             )
         }
     }
+
+    fun audioBookSelectedInPlayList(selectedAudioBookPosition: Int) {
+        ContextCompat.startForegroundService(app, PlayerService.newIntentForPlayItemOfPlayList(app, selectedAudioBookPosition))
+    }
 }

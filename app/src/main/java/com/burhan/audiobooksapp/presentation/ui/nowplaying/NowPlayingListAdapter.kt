@@ -14,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
+import com.burhan.audiobooksapp.presentation.core.extension.setSingleClickListener
 import com.burhan.audiobooksapp.presentation.ui.player.service.PlayList
 import kotlinx.android.synthetic.main.item_play_list_layout.view.*
 
-class NowPlayingListAdapter : RecyclerView.Adapter<NowPlayingListAdapter.ViewHolder>() {
+class NowPlayingListAdapter(private var onClickListener: (Int) -> Unit) :
+    RecyclerView.Adapter<NowPlayingListAdapter.ViewHolder>() {
 
     internal var data = PlayList()
 
@@ -33,7 +35,7 @@ class NowPlayingListAdapter : RecyclerView.Adapter<NowPlayingListAdapter.ViewHol
     override fun getItemCount() = data.audioBooks.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(data.audioBooks[position], position == data.currentInd)
+        holder.bind(data.audioBooks[position], position == data.currentInd, onClickListener)
 
     fun setData(playList: PlayList) {
         data = playList
@@ -45,11 +47,12 @@ class NowPlayingListAdapter : RecyclerView.Adapter<NowPlayingListAdapter.ViewHol
         private val name: TextView = itemView.tvPlayListaudioBookName
         private val author: TextView = itemView.tvPlayListAuthor
 
-        fun bind(audioBook: AudioBook, isHighLighted: Boolean = false) {
+        fun bind(audioBook: AudioBook, isHighLighted: Boolean = false, callback: (Int) -> Unit) {
             name.text = audioBook.name
             author.text = audioBook.author
             icon.loadFromUrl(audioBook.imageUrl)
             name.setTextColor(if (isHighLighted) Color.RED else Color.BLACK)
+            itemView.setSingleClickListener { callback(adapterPosition) }
         }
     }
 

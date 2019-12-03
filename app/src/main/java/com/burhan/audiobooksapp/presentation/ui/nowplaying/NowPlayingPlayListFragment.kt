@@ -28,7 +28,10 @@ class NowPlayingPlayListFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
 
-        val adapter = NowPlayingListAdapter()
+        val adapter = NowPlayingListAdapter() { selectedAudioBookPosition ->
+            viewModel.audioBookSelectedInPlayList(selectedAudioBookPosition)
+        }
+
         rvNowPlayingList.apply {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)

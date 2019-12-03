@@ -15,7 +15,19 @@ data class PlayerPlayList(private var audioBooks: MutableList<AudioBook> = mutab
     fun goToNext(): AudioBook? {
         if (hasNext()) {
             currentIndex++
-            return audioBooks[currentIndex]
+            return getCurrent()
+        }
+        return null
+    }
+
+    fun has(position: Int): Boolean {
+        return audioBooks.size > position
+    }
+
+    fun goToPosition(position: Int): AudioBook? {
+        if (has(position)) {
+            currentIndex = position
+            return getCurrent()
         }
         return null
     }

@@ -94,6 +94,14 @@ class PlayerService : LifecycleService() {
                         }
                     }
                 }
+                CDM_PLAY_ITEM_OF_PLAYLIST -> {
+                    intent.getIntExtra(ARG_PLAYLIST_ITEM_INDEX, -1).let {position ->
+                        if (position > 0 && playerPlayList.has(position)){
+                            playerPlayList.goToPosition(position)
+                            play()
+                        }
+                    }
+                }
                 else -> {
                     Log.e(TAG, "Command not recognised!")
                 }
@@ -252,10 +260,12 @@ class PlayerService : LifecycleService() {
         const val CMD_TOGGLE_PLAY_PAUSE = "CMD_TOGGLE_PLAY_PAUSE"
         const val CMD_TIME_SHIFT_TO_PERCENT = "CMD_TIME_SHIFT_TO_PERCENT"
         const val CMD_TIME_SHIFT_WITH_AMOUNT = "CMD_TIME_SHIFT_WITH_AMOUNT"
+        const val CDM_PLAY_ITEM_OF_PLAYLIST = "CDM_PLAY_ITEM_OF_PLAYLIST"
 
         private const val ARG_AUDIO_BOOK = "ARG_AUDIO_BOOK"
         private const val ARG_COMMAND = "ARG_COMMAND"
 
+        private const val ARG_PLAYLIST_ITEM_INDEX = "ARG_PLAYLIST_ITEM_INDEX"
         private const val ARG_TIME_SHIFT_PERCENTAGE = "ARG_TIME_SHIFT_PERCENTAGE"
         private const val ARG_TIME_SHIFT_SECONDS = "ARG_TIME_SHIFT_SECONDS"
 
@@ -304,5 +314,13 @@ class PlayerService : LifecycleService() {
                     ARG_TIME_SHIFT_SECONDS,
                     seconds
                 )
+
+        fun newIntentForPlayItemOfPlayList(
+            callerContext: Context,
+            selectedAudioBookPosition: Int
+        ): Intent = Intent(callerContext, PlayerService::class.java).putExtra(
+            ARG_COMMAND,
+            CDM_PLAY_ITEM_OF_PLAYLIST
+        ).putExtra(ARG_PLAYLIST_ITEM_INDEX, selectedAudioBookPosition)
     }
 }
