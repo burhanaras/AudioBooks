@@ -54,14 +54,10 @@ class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
                 positionOffset: Float,
                 positionOffsetPixels: Int
             ) {
-                Log.d(
-                    "BURHAN",
-                    "position:$position positionOffset:$positionOffset positionPixels:$positionOffsetPixels"
-                )
+
             }
 
             override fun onPageSelected(position: Int) {
-                Log.d("BURHAN", "position:$position")
                 dotIndicator.setSelected(position)
             }
         })
