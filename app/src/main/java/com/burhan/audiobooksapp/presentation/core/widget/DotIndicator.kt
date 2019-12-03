@@ -11,15 +11,14 @@ import com.burhan.audiobooksapp.R
  */
 class DotIndicator : LinearLayout {
 
-    private lateinit var dot0: View
-    private lateinit var dot1: View
+    private var dots: MutableList<View> = mutableListOf()
 
     constructor(context: Context) : super(context) {
-        initViews()
+        dots()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        initViews()
+        dots()
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
@@ -27,50 +26,37 @@ class DotIndicator : LinearLayout {
         attrs,
         defStyle
     ) {
-        initViews()
+        dots()
     }
 
-    private fun initViews() {
+    fun dots(num: Int = 2, smallDots: Boolean = false) {
         orientation = HORIZONTAL
-        dot0 = View(context)
-        dot0.setBackgroundResource(R.drawable.ic_dot_dark)
-        addView(dot0, 30, 30)
+        removeAllViews()
+        dots.clear()
+        val dotSize = if (smallDots) 12 else 30
 
-        dot1 = View(context)
-        dot1.setBackgroundResource(R.drawable.ic_dot_light)
-        addView(dot1, 30, 30)
+        for (index in 0 until num) {
+            val dot = View(context)
+            dot.setBackgroundResource(if (index == 0) R.drawable.ic_dot_dark else R.drawable.ic_dot_light)
+            addView(dot, dotSize, dotSize)
+            dots.add(dot)
 
-        val lp = dot0.layoutParams as LinearLayout.LayoutParams
+            val lp = dot.layoutParams as LinearLayout.LayoutParams
 
-        lp.apply {
-            leftMargin = 10
-            rightMargin = 10
-            topMargin = 10
-            bottomMargin = 10
-            dot0.layoutParams = this
+            lp.apply {
+                leftMargin = 10
+                rightMargin = 10
+                topMargin = 10
+                bottomMargin = 10
+                dot.layoutParams = this
+            }
         }
-
-        val lp0 = dot1.layoutParams as LinearLayout.LayoutParams
-        lp0.apply {
-            leftMargin = 10
-            rightMargin = 10
-            topMargin = 10
-            bottomMargin = 10
-            dot1.layoutParams = this
-        }
-
     }
 
     fun setSelected(position: Int) {
-        when (position) {
-            0 -> {
-                dot0.setBackgroundResource(R.drawable.ic_dot_dark)
-                dot1.setBackgroundResource(R.drawable.ic_dot_light)
-            }
-            else -> {
-                dot0.setBackgroundResource(R.drawable.ic_dot_light)
-                dot1.setBackgroundResource(R.drawable.ic_dot_dark)
-            }
+        if (position < dots.size) {
+            dots.forEach { it.setBackgroundResource(R.drawable.ic_dot_light) }
+            dots[position].setBackgroundResource(R.drawable.ic_dot_dark)
         }
     }
 }

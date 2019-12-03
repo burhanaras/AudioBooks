@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager.widget.ViewPager
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.presentation.ui.home.HomeFragmentViewModel
 import kotlinx.android.synthetic.main.fragment_home_banner.*
@@ -38,8 +39,28 @@ class HomeBannerFragment : Fragment() {
         viewModel.bannerData.observe(this, Observer {
             it?.let { audioBooks ->
                 adapter.setData(audioBooks)
+                dotIndicatorBanner.dots(audioBooks.size, smallDots = true)
             }
         })
+
+        viewPagerHomeBanner.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                dotIndicatorBanner.setSelected(position)
+            }
+        })
+
     }
 
 }
