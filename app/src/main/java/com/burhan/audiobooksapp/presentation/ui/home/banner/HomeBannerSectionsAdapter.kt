@@ -14,11 +14,11 @@ class HomeBannerSectionsAdapter(fragmentManager: FragmentManager) :
     private var audioBooks = listOf<AudioBook>()
 
     override fun getItem(position: Int): Fragment {
-        return BannerItemFragment.newInstance(audioBooks[position])
+        return BannerItemFragment.newInstance(audioBooks[position % audioBooks.size])
     }
 
     override fun getCount(): Int {
-        return audioBooks.size
+        return Int.MAX_VALUE
     }
 
     fun setData(audioBooks: List<AudioBook>) {

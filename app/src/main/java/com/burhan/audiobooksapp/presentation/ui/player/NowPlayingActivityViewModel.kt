@@ -28,6 +28,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     internal var nowPlayingPlayListSDO = MutableLiveData<PlayList>()
 
     private var audioBook: AudioBook? = null
+    private var playList: PlayList? = null
     private var isPlaying: Boolean = false
 
     private val getPlayListUseCase = GetPlayListUseCase()
@@ -70,7 +71,10 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                             playIconRes
                         )
                     nowPlayingTimeInfoSDO.postValue(sdo)
-                    nowPlayingPlayListSDO.postValue(nowPlayingInfo.playList)
+                    if (playList == null || !playList?.equals(nowPlayingInfo.playList)!!) {
+                        nowPlayingPlayListSDO.postValue(nowPlayingInfo.playList)
+                        playList = nowPlayingInfo.playList
+                    }
                     isPlaying = nowPlayingInfo.playStatus == PlayStatus.PLAYING
                 }
             intent.getParcelableExtra<NowPlayingInfo>(PlayerService.NowPlayingFinishInfo)
@@ -140,6 +144,9 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     }
 
     fun audioBookSelectedInPlayList(selectedAudioBookPosition: Int) {
-        ContextCompat.startForegroundService(app, PlayerService.newIntentForPlayItemOfPlayList(app, selectedAudioBookPosition))
+        ContextCompat.startForegroundService(
+            app,
+            PlayerService.newIntentForPlayItemOfPlayList(app, selectedAudioBookPosition)
+        )
     }
 }

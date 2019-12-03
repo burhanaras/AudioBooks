@@ -28,7 +28,7 @@ class NowPlayingPlayListFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
 
-        val adapter = NowPlayingListAdapter() { selectedAudioBookPosition ->
+        val adapter = NowPlayingListAdapter { selectedAudioBookPosition ->
             viewModel.audioBookSelectedInPlayList(selectedAudioBookPosition)
         }
 
@@ -41,6 +41,7 @@ class NowPlayingPlayListFragment : Fragment() {
         viewModel.nowPlayingPlayListSDO.observe(this, Observer {
             it?.let { playList ->
                 adapter.setData(playList)
+                rvNowPlayingList.smoothScrollToPosition(playList.currentInd)
             }
         })
     }

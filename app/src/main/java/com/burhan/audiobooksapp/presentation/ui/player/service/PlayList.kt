@@ -27,6 +27,12 @@ data class PlayList(val audioBooks: Array<AudioBook> = arrayOf()) : Parcelable {
 
         other as PlayList
 
+        if (audioBooks.size != other.audioBooks.size) return false
+        audioBooks.forEachIndexed { index, audioBook ->
+            if (audioBook.id != other.audioBooks[index].id) {
+                return false
+            }
+        }
         if (!audioBooks.contentEquals(other.audioBooks)) return false
 
         return true

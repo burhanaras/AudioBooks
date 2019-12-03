@@ -54,9 +54,9 @@ class DotIndicator : LinearLayout {
     }
 
     fun setSelected(position: Int) {
-        if (position < dots.size) {
-            dots.forEach { it.setBackgroundResource(R.drawable.ic_dot_light) }
-            dots[position].setBackgroundResource(R.drawable.ic_dot_dark)
-        }
+        val positionSafe = position % dots.size
+        dots.forEach { it.setBackgroundResource(R.drawable.ic_dot_light) }
+        dots[positionSafe].setBackgroundResource(R.drawable.ic_dot_dark)
+
     }
 }
