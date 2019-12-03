@@ -1,10 +1,12 @@
 package com.burhan.audiobooksapp.presentation.ui.nowplaying
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewpager.widget.ViewPager
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivityViewModel
@@ -38,9 +40,31 @@ class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
                     addFragment(NowPlayingPlayListFragment.newInstance())
                     viewPagerNowPlayingBottomSheet.adapter = this
                 }
-
             }
         }
+
+        viewPagerNowPlayingBottomSheet.addOnPageChangeListener(object :
+            ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                Log.d(
+                    "BURHAN",
+                    "position:$position positionOffset:$positionOffset positionPixels:$positionOffsetPixels"
+                )
+            }
+
+            override fun onPageSelected(position: Int) {
+                Log.d("BURHAN", "position:$position")
+                dotIndicator.setSelected(position)
+            }
+        })
     }
 
     companion object {
