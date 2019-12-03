@@ -1,16 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
+        android:orientation="vertical"
         tools:context=".presentation.ui.home.HomeFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvHomeCategories"
+    <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"/>
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
-</FrameLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+            <fragment
+                    android:id="@+id/homeBannerFragment"
+                    android:name="com.burhan.audiobooksapp.presentation.ui.home.banner.HomeBannerFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvHomeCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:clipToPadding="false"
+                    tools:listitem="@layout/item_audiobook" />
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</LinearLayout>
