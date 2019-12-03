@@ -18,7 +18,7 @@ class HomeBannerSectionsAdapter(fragmentManager: FragmentManager) :
     }
 
     override fun getCount(): Int {
-        return Int.MAX_VALUE
+        return if(audioBooks.isNotEmpty()) Int.MAX_VALUE else 0
     }
 
     fun setData(audioBooks: List<AudioBook>) {
