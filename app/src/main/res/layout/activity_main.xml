@@ -18,7 +18,7 @@
             android:layout_marginRight="0dp"
             android:layout_marginBottom="0dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toTopOf="@+id/nav_view"
+            app:layout_constraintBottom_toTopOf="@+id/navView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -37,7 +37,7 @@
             app:cardBackgroundColor="@color/colorAccent"
             app:cardCornerRadius="30dp"
             app:layout_constraintBottom_toBottomOf="@+id/fragmentContainer"
-            app:layout_constraintEnd_toEndOf="@+id/nav_view">
+            app:layout_constraintEnd_toEndOf="@+id/navView">
 
         <com.burhan.audiobooksapp.presentation.core.widget.MiniEqualizerView
                 android:id="@+id/miniEqualizer"
@@ -50,7 +50,7 @@
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/nav_view"
+            android:id="@+id/navView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="0dp"

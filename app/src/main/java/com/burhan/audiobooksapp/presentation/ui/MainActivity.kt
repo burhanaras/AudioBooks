@@ -65,7 +65,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
         supportFragmentManager.beginTransaction()
             .add(R.id.fragmentContainer, HomeFragment.newInstance()).commit()
 
@@ -96,5 +95,14 @@ class MainActivity : AppCompatActivity() {
                 else miniEqualizer.stopBars()
             }
         })
+    }
+
+    override fun onBackPressed() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (currentFragment is HomeFragment) {
+            super.onBackPressed()
+        } else {
+            navView.selectedItemId = R.id.navigation_home
+        }
     }
 }
