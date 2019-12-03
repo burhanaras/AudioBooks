@@ -61,6 +61,7 @@ class NowPlayingActivity : AppCompatActivity() {
                 viewModel.seekBarProgressChanged(seekBar.progress, true)
             }
         })
+        ivNowPlayingShare.setSingleClickListener { viewModel.onClickShare() }
     }
 
     private fun setObservers() {
@@ -80,6 +81,7 @@ class NowPlayingActivity : AppCompatActivity() {
                 ivNowPlayingPlayPauseButton.setImageResource(nowPlayingTimeInfoSDO.playPauseButtonIcon)
             }
         })
+        viewModel.shareIntent.observe(this, Observer { startActivity(it) })
     }
 
     companion object {

@@ -26,6 +26,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     internal var nowPlayingSDO = MutableLiveData<NowPlayingSDO>()
     internal var nowPlayingTimeInfoSDO = MutableLiveData<NowPlayingTimeInfoSDO>()
     internal var nowPlayingPlayListSDO = MutableLiveData<PlayList>()
+    internal var shareIntent = MutableLiveData<Intent>()
 
     private var audioBook: AudioBook? = null
     private var playList: PlayList? = null
@@ -148,5 +149,16 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
             app,
             PlayerService.newIntentForPlayItemOfPlayList(app, selectedAudioBookPosition)
         )
+    }
+
+    fun onClickShare() {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Hi, i read ${audioBook?.name} on ${app.getString(R.string.app_name)} app. I suggest you as well."
+            )
+        }
+        shareIntent.postValue(intent)
     }
 }

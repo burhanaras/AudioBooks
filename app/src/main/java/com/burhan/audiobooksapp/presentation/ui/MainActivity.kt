@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_dashboard -> {
                 DashboardFragment.newInstance()
             }
-            R.id.navigation_notifications -> {
+            R.id.navigation_search -> {
                 SettingsFragment.newInstance()
             }
             else -> HomeFragment.newInstance()

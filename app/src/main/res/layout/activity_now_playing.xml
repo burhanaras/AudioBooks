@@ -98,7 +98,7 @@
             app:srcCompat="@drawable/ic_unfavorite" />
 
     <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/ivNowPlayingShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"

@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel;
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.domain.model.Category
-import com.burhan.audiobooksapp.domain.usecase.GetCategoriesOfHomeUseCase
+import com.burhan.audiobooksapp.domain.usecase.GetCategoriesOfDashboardUseCase
 
 class HomeFragmentViewModel : ViewModel() {
     internal val bannerData: MutableLiveData<List<AudioBook>> = MutableLiveData()
     internal val data: MutableLiveData<List<Category>> = MutableLiveData()
 
-    private val getCategoriesOfHomeUseCase = GetCategoriesOfHomeUseCase()
+    private val getCategoriesOfHomeUseCase = GetCategoriesOfDashboardUseCase()
 
     fun loadData() {
         getCategoriesOfHomeUseCase.loadData { categoriesData ->

@@ -63,6 +63,7 @@ class NowPlayingInfoFragment : Fragment() {
                 ivNowPlayingPlayPauseButton.setImageResource(nowPlayingTimeInfoSDO.playPauseButtonIcon)
             }
         })
+        viewModel.shareIntent.observe(this, Observer { startActivity(it) })
     }
 
     private fun initUI() {
@@ -83,6 +84,10 @@ class NowPlayingInfoFragment : Fragment() {
                 viewModel.seekBarProgressChanged(seekBar.progress, true)
             }
         })
+
+        ivNowPlayingShare.setSingleClickListener {
+            viewModel.onClickShare()
+        }
     }
 
     private fun getExtras() {
