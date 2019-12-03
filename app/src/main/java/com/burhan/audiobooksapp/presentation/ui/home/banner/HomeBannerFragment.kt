@@ -25,23 +25,20 @@ class HomeBannerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home_banner, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this.activity!!).get(HomeFragmentViewModel::class.java)
+        
+        initUI()
+        setObservers()
+    }
 
+    private fun initUI() {
         adapter = HomeBannerSectionsAdapter(childFragmentManager)
         viewPagerHomeBanner.adapter = adapter
-
-        viewModel.bannerData.observe(this, Observer {
-            it?.let { audioBooks ->
-                adapter.setData(audioBooks)
-                dotIndicatorBanner.dots(audioBooks.size, smallDots = true)
-            }
-        })
 
         viewPagerHomeBanner.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
@@ -60,7 +57,15 @@ class HomeBannerFragment : Fragment() {
                 dotIndicatorBanner.setSelected(position)
             }
         })
+    }
 
+    private fun setObservers() {
+        viewModel.bannerData.observe(this, Observer {
+            it?.let { audioBooks ->
+                adapter.setData(audioBooks)
+                dotIndicatorBanner.dots(audioBooks.size, smallDots = true)
+            }
+        })
     }
 
 }

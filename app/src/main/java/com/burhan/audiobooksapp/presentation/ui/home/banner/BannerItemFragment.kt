@@ -12,6 +12,8 @@ import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.createPalette
 import com.burhan.audiobooksapp.presentation.core.extension.loadBitmapFromUrl
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
+import com.burhan.audiobooksapp.presentation.core.extension.setSingleClickListener
+import com.burhan.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailActivity
 import kotlinx.android.synthetic.main.fragment_banner_item.*
 
 /**
@@ -44,6 +46,14 @@ class BannerItemFragment : Fragment() {
                 }
             }
 
+            view?.setSingleClickListener {
+                startActivity(context?.let { it1 ->
+                    AudioBookDetailActivity.newIntent(
+                        it1,
+                        audiobook
+                    )
+                })
+            }
         }
     }
 
