@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP
 import androidx.annotation.RequiresApi
@@ -14,6 +15,7 @@ import androidx.media.session.MediaButtonReceiver
 import com.bumptech.glide.Glide
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
+import com.burhan.audiobooksapp.presentation.ui.MainActivity
 import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -68,11 +70,19 @@ class NotificationBuilder(private val context: Context) {
                             else getPlayAction()
                         )
                         setDeleteIntent(stopPendingIntent)
+                        setContentIntent(getContentIntent())
                     }.build()
 
                 callback(notification)
             }
         }
+    }
+
+    private fun getContentIntent(): PendingIntent? {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        return PendingIntent.getActivity(context, 0, intent, 0)
     }
 
     private fun shouldCreateNotificationChannel() =
