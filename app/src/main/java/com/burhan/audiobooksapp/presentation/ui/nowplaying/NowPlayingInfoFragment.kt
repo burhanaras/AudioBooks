@@ -38,6 +38,7 @@ class NowPlayingInfoFragment : Fragment() {
         setObservers()
         initUI()
         getExtras()
+        viewModel.reLoad()
     }
 
     private fun requestAudioFocus() {

@@ -94,13 +94,16 @@ class PlayerService : LifecycleService() {
                         }
                     }
                 }
-                CDM_PLAY_ITEM_OF_PLAYLIST -> {
-                    intent.getIntExtra(ARG_PLAYLIST_ITEM_INDEX, -1).let {position ->
-                        if (position > 0 && playerPlayList.has(position)){
+                CMD_PLAY_ITEM_OF_PLAYLIST -> {
+                    intent.getIntExtra(ARG_PLAYLIST_ITEM_INDEX, -1).let { position ->
+                        if (position > 0 && playerPlayList.has(position)) {
                             playerPlayList.goToPosition(position)
                             play()
                         }
                     }
+                }
+                CMD_BROADCAST_INFO -> {
+                    sendNowPlayingTimeInfoBroadcast()
                 }
                 else -> {
                     Log.e(TAG, "Command not recognised!")
@@ -149,13 +152,7 @@ class PlayerService : LifecycleService() {
                     }
 
                     override fun onTick(millisUntilFinish: Long) {
-                        val seconds =
-                            (player.currentPosition).toDouble().roundToInt() / 1000
-
-                        sendNowPlayingTimeInfoBroadcast(
-                            seconds,
-                            (player.duration / 1E3).toInt(), player.isPlaying
-                        )
+                        sendNowPlayingTimeInfoBroadcast()
                         player.currentPosition
 
                     }
@@ -200,11 +197,12 @@ class PlayerService : LifecycleService() {
         }
     }
 
-    private fun sendNowPlayingTimeInfoBroadcast(
-        progress: Int,
-        duration: Int,
-        playing: Boolean
-    ) {
+    private fun sendNowPlayingTimeInfoBroadcast() {
+
+        val progress = (player.currentPosition).toDouble().roundToInt() / 1000
+        val duration = (player.duration / 1E3).toInt()
+        val playing = player.isPlaying
+
         this.playerPlayList.getCurrent()?.let { audioBook ->
             val intent = Intent(broadCastActionName)
             intent.putExtra(
@@ -260,7 +258,8 @@ class PlayerService : LifecycleService() {
         const val CMD_TOGGLE_PLAY_PAUSE = "CMD_TOGGLE_PLAY_PAUSE"
         const val CMD_TIME_SHIFT_TO_PERCENT = "CMD_TIME_SHIFT_TO_PERCENT"
         const val CMD_TIME_SHIFT_WITH_AMOUNT = "CMD_TIME_SHIFT_WITH_AMOUNT"
-        const val CDM_PLAY_ITEM_OF_PLAYLIST = "CDM_PLAY_ITEM_OF_PLAYLIST"
+        const val CMD_PLAY_ITEM_OF_PLAYLIST = "CMD_PLAY_ITEM_OF_PLAYLIST"
+        const val CMD_BROADCAST_INFO = "CMD_BROADCAST_INFO"
 
         private const val ARG_AUDIO_BOOK = "ARG_AUDIO_BOOK"
         private const val ARG_COMMAND = "ARG_COMMAND"
@@ -320,7 +319,11 @@ class PlayerService : LifecycleService() {
             selectedAudioBookPosition: Int
         ): Intent = Intent(callerContext, PlayerService::class.java).putExtra(
             ARG_COMMAND,
-            CDM_PLAY_ITEM_OF_PLAYLIST
+            CMD_PLAY_ITEM_OF_PLAYLIST
         ).putExtra(ARG_PLAYLIST_ITEM_INDEX, selectedAudioBookPosition)
+
+        fun newIntentForPlayerInfo(callerContext: Context): Intent =
+            Intent(callerContext, PlayerService::class.java)
+                .putExtra(ARG_COMMAND, CMD_BROADCAST_INFO)
     }
 }

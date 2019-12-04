@@ -161,4 +161,8 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
         }
         shareIntent.postValue(intent)
     }
+
+    fun reLoad() {
+        ContextCompat.startForegroundService(app, PlayerService.newIntentForPlayerInfo(app))
+    }
 }
