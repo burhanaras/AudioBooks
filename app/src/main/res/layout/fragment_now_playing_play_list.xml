@@ -6,7 +6,7 @@
         android:paddingTop="20dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        tools:context=".presentation.ui.nowplaying.NowPlayingPlayListFragment">
+        tools:context=".presentation.ui.nowplaying.playlist.NowPlayingPlayListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvNowPlayingList"
@@ -15,7 +15,7 @@
             android:clipToPadding="false"
             android:paddingTop="@dimen/list_item_spacing_half"
             android:paddingBottom="@dimen/list_item_spacing_half"
-            tools:context=".presentation.ui.nowplaying.NowPlayingBottomSheetFragment"
+            tools:context=".presentation.ui.nowplaying.bottomsheet.NowPlayingBottomSheetFragment"
             tools:listitem="@layout/item_play_list_layout" />
 
 </FrameLayout>

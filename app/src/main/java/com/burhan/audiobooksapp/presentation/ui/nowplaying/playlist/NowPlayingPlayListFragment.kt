@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp.presentation.ui.nowplaying
+package com.burhan.audiobooksapp.presentation.ui.nowplaying.playlist
 
 
 import android.os.Bundle
@@ -28,9 +28,10 @@ class NowPlayingPlayListFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
 
-        val adapter = NowPlayingListAdapter { selectedAudioBookPosition ->
-            viewModel.audioBookSelectedInPlayList(selectedAudioBookPosition)
-        }
+        val adapter =
+            NowPlayingListAdapter { selectedAudioBookPosition ->
+                viewModel.audioBookSelectedInPlayList(selectedAudioBookPosition)
+            }
 
         rvNowPlayingList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -49,6 +50,7 @@ class NowPlayingPlayListFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = NowPlayingPlayListFragment()
+        fun newInstance() =
+            NowPlayingPlayListFragment()
     }
 }

@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp.presentation.ui.nowplaying
+package com.burhan.audiobooksapp.presentation.ui.nowplaying.info
 
 
 import android.content.Context

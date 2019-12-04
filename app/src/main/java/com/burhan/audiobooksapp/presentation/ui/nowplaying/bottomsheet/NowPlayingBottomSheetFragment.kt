@@ -1,7 +1,6 @@
-package com.burhan.audiobooksapp.presentation.ui.nowplaying
+package com.burhan.audiobooksapp.presentation.ui.nowplaying.bottomsheet
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +8,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
+import com.burhan.audiobooksapp.presentation.ui.nowplaying.info.NowPlayingInfoFragment
+import com.burhan.audiobooksapp.presentation.ui.nowplaying.playlist.NowPlayingPlayListFragment
 import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivityViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_now_playing_bottomsheet.*
@@ -35,7 +36,9 @@ class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
 
         arguments?.let {
             it.getParcelable<AudioBook>(ARG_AUDIO_BOOK)?.let { audioBook ->
-                NowPlayingBottomSheetSectionsPagerAdapter(childFragmentManager).apply {
+                NowPlayingBottomSheetSectionsPagerAdapter(
+                    childFragmentManager
+                ).apply {
                     addFragment(NowPlayingInfoFragment.newInstance(audioBook))
                     addFragment(NowPlayingPlayListFragment.newInstance())
                     viewPagerNowPlayingBottomSheet.adapter = this

@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.presentation.ui.dashboard.DashboardFragment
 import com.burhan.audiobooksapp.presentation.ui.home.HomeFragment
-import com.burhan.audiobooksapp.presentation.ui.nowplaying.NowPlayingBottomSheetFragment
+import com.burhan.audiobooksapp.presentation.ui.nowplaying.bottomsheet.NowPlayingBottomSheetFragment
 import com.burhan.audiobooksapp.presentation.ui.settings.SettingsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*

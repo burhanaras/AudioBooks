@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp.presentation.ui.nowplaying
+package com.burhan.audiobooksapp.presentation.ui.nowplaying.playlist
 
 /**
  * Developed by tcbaras on 2019-12-01.
