@@ -15,6 +15,7 @@ import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.core.extension.loadFromUrl
 import com.burhan.audiobooksapp.presentation.core.extension.setSingleClickListener
+import com.burhan.audiobooksapp.presentation.ui.nowplaying.bottomsheet.NowPlayingbottomSheetSharedViewModel
 import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivityViewModel
 import com.burhan.audiobooksapp.presentation.ui.player.audiofocus.AudioFocusObserver
 import kotlinx.android.synthetic.main.fragment_now_playing_info.*
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.fragment_now_playing_info.*
 
 class NowPlayingInfoFragment : Fragment() {
     private lateinit var viewModel: NowPlayingActivityViewModel
+    private lateinit var sharedViewModel: NowPlayingbottomSheetSharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +35,8 @@ class NowPlayingInfoFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
+        sharedViewModel =
+            ViewModelProviders.of(activity!!).get(NowPlayingbottomSheetSharedViewModel::class.java)
         requestAudioFocus()
 
         setObservers()
@@ -65,6 +69,14 @@ class NowPlayingInfoFragment : Fragment() {
             }
         })
         viewModel.shareIntent.observe(this, Observer { startActivity(it) })
+
+        sharedViewModel.expandImage.observe(this, Observer {
+            cardPlayerAudioBookImage.animate().scaleX(1.6f).scaleY(1.6f).translationY(120f).start()
+        })
+
+        sharedViewModel.collapseImage.observe(this, Observer {
+            cardPlayerAudioBookImage.animate().scaleX(1f).scaleY(1f).start()
+        })
     }
 
     private fun initUI() {

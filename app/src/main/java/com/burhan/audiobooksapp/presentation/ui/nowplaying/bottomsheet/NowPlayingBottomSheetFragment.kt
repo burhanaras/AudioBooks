@@ -1,6 +1,7 @@
 package com.burhan.audiobooksapp.presentation.ui.nowplaying.bottomsheet
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +12,14 @@ import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.ui.nowplaying.info.NowPlayingInfoFragment
 import com.burhan.audiobooksapp.presentation.ui.nowplaying.playlist.NowPlayingPlayListFragment
 import com.burhan.audiobooksapp.presentation.ui.player.NowPlayingActivityViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_now_playing_bottomsheet.*
 
 class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var viewModel: NowPlayingActivityViewModel
+    private lateinit var sharedViewModel: NowPlayingbottomSheetSharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +32,8 @@ class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(NowPlayingActivityViewModel::class.java)
+        sharedViewModel =
+            ViewModelProviders.of(activity!!).get(NowPlayingbottomSheetSharedViewModel::class.java)
         initUI()
     }
 
@@ -62,6 +67,23 @@ class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
 
             override fun onPageSelected(position: Int) {
                 dotIndicator.setSelected(position)
+            }
+        })
+
+        val behavior = BottomSheetBehavior.from(view?.parent as View)
+        behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                Log.d("BURHANx", "slideOffset:$slideOffset")
+//                dotIndicator.animate().scaleX(slideOffset).scaleY(slideOffset).apply {
+//                    interpolator = LinearInterpolator()
+//                    duration = 1
+//                }.start()
+
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                Log.d("BURHANx", "newState:$newState") //3: Expanded 4: Collapsed
+                sharedViewModel.bottomSheetStateChanged(newState)
             }
         })
     }
