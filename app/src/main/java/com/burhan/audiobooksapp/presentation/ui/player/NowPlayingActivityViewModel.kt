@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +19,7 @@ import com.burhan.audiobooksapp.presentation.ui.player.model.NowPlayingTimeInfoS
 import com.burhan.audiobooksapp.presentation.ui.player.model.PlayStatus
 import com.burhan.audiobooksapp.presentation.ui.player.service.PlayList
 import com.burhan.audiobooksapp.presentation.ui.player.service.PlayerService
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
  * Developed by tcbaras on 2019-11-13.
@@ -33,6 +35,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     private var isPlaying: Boolean = false
 
     private val getPlayListUseCase = GetPlayListUseCase()
+    private val fireBaseAnalytics = FirebaseAnalytics.getInstance(app)
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -46,6 +49,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
                     nowPlayingSDO.postValue(sdo)
                     nowPlayingPlayListSDO.postValue(nowPlayingInfo.playList)
                     isPlaying = true
+                    sendFireBaseAnalytics(nowPlayingInfo.audioBook)
                 }
             intent.getParcelableExtra<NowPlayingInfo>(PlayerService.NowPlayingInfo)
                 ?.let { nowPlayingInfo ->
@@ -164,5 +168,14 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
 
     fun reLoad() {
         ContextCompat.startForegroundService(app, PlayerService.newIntentForPlayerInfo(app))
+    }
+
+
+    private fun sendFireBaseAnalytics(audioBook: AudioBook) {
+        val bundle = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_ID, audioBook.id)
+            putString(FirebaseAnalytics.Param.ITEM_NAME, audioBook.name)
+        }
+        fireBaseAnalytics.logEvent("Play", bundle)
     }
 }

@@ -1,14 +1,31 @@
 package com.burhan.audiobooksapp.domain.usecase
 
+import android.util.Log
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.domain.model.Category
+import com.google.firebase.firestore.FirebaseFirestore
 
 /**
  * Developed by tcbaras on 2019-10-24.
  */
 class GetCategoriesOfHomeUseCase {
+
+    val fireStoreDB = FirebaseFirestore.getInstance()
+
     fun loadData(callback: (categories: List<Category>) -> Unit) {
         callback(dummy())
+
+        fireStoreDB.collection("AudioBook")
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    for (document in it.result!!) {
+                        Log.d("GetCategoriesOfHome", "${document.id} ==> ${document.data}")
+                    }
+                } else {
+                    Log.e("GetCategoriesOfHome", it.exception.toString())
+                }
+            }
     }
 
     private fun dummy(): @ParameterName(name = "categories") List<Category> {
