@@ -15,7 +15,8 @@ class HomeFragmentViewModel : ViewModel() {
     fun loadData() {
         getCategoriesOfHomeUseCase.loadData { categoriesData ->
             data.postValue(categoriesData)
-            bannerData.postValue(categoriesData.first().audioBooks.take(6))
+            if (categoriesData.isNotEmpty() && categoriesData.first().audioBooks.size > 6)
+                bannerData.postValue(categoriesData.first().audioBooks.take(6))
         }
     }
 }

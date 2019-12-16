@@ -11,8 +11,9 @@ class GetPlayListUseCase {
 
     fun getPlayListFor(audioBook: AudioBook, callBack: (playList: PlayList) -> Unit) {
         DummyData().provideTenAudioBooks {
-            mutableListOf(audioBook).apply {
+            mutableListOf<AudioBook>().apply {
                 addAll(it)
+                add(audioBook)
                 callBack(PlayList(this.toTypedArray()))
             }
         }

@@ -96,7 +96,7 @@ class PlayerService : LifecycleService() {
                 }
                 CMD_PLAY_ITEM_OF_PLAYLIST -> {
                     intent.getIntExtra(ARG_PLAYLIST_ITEM_INDEX, -1).let { position ->
-                        if (position > 0 && playerPlayList.has(position)) {
+                        if (position > -1 && playerPlayList.has(position)) {
                             playerPlayList.goToPosition(position)
                             play()
                         }
