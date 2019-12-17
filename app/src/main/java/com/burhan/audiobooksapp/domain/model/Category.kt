@@ -11,5 +11,6 @@ data class Category(
     val id: String,
     val name: String,
     val imageUrl: String,
-    val audioBooks: List<AudioBook>
+    var audioBooks: List<AudioBook>,
+    var order: String = "1000"
 ) : Parcelable

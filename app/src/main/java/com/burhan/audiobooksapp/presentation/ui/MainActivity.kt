@@ -1,5 +1,7 @@
 package com.burhan.audiobooksapp.presentation.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -104,5 +106,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             navView.selectedItemId = R.id.navigation_home
         }
+    }
+
+    companion object {
+        fun newIntent(callerContext: Context) = Intent(callerContext, MainActivity::class.java)
     }
 }
