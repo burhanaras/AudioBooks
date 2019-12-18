@@ -15,14 +15,19 @@ import com.burhan.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailA
 import com.burhan.audiobooksapp.presentation.ui.home.adapter.HomeCategoriesAdapter
 import kotlinx.android.synthetic.main.fragment_home.*
 
-class HomeFragment : Fragment() {
+class HomeFragment(private val onFragmentInterActionListener: (String) -> Unit) : Fragment() {
 
     private lateinit var viewModel: HomeFragmentViewModel
     private val adapter = HomeCategoriesAdapter(object : (AudioBook) -> Unit {
         override fun invoke(audioBook: AudioBook) {
             startActivity(activity?.let { AudioBookDetailActivity.newIntent(it, audioBook) })
         }
-    })
+    },
+        object : (String) -> Unit {
+            override fun invoke(categoryId: String) {
+                onFragmentInterActionListener(categoryId)
+            }
+        })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +61,8 @@ class HomeFragment : Fragment() {
 
     companion object {
         val TAG: String = HomeFragment::class.java.simpleName
-        fun newInstance() = HomeFragment()
+        fun newInstance(onFragmentInterActionListener: (String) -> Unit) =
+            HomeFragment(onFragmentInterActionListener)
     }
 
 }

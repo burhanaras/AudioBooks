@@ -13,6 +13,7 @@ import com.burhan.audiobooksapp.presentation.ui.dashboard.DashboardFragment
 import com.burhan.audiobooksapp.presentation.ui.home.HomeFragment
 import com.burhan.audiobooksapp.presentation.ui.nowplaying.bottomsheet.NowPlayingBottomSheetFragment
 import com.burhan.audiobooksapp.presentation.ui.search.SearchFragment
+import com.burhan.audiobooksapp.presentation.ui.showall.ShowAllFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -26,11 +27,17 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+    private val onFragmentInterActionListener = object : (String) -> Unit {
+        override fun invoke(categoryId: String) {
+            replaceFragment(ShowAllFragment.newInstance(categoryId), ShowAllFragment.TAG)
+        }
+    }
+
     private fun loadFragment(itemId: Int) {
         val tag = itemId.toString()
         val fragment: Fragment = supportFragmentManager.findFragmentByTag(tag) ?: when (itemId) {
             R.id.navigation_home -> {
-                HomeFragment.newInstance()
+                HomeFragment.newInstance(onFragmentInterActionListener)
             }
             R.id.navigation_dashboard -> {
                 DashboardFragment.newInstance()
@@ -38,28 +45,23 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_search -> {
                 SearchFragment.newInstance()
             }
-            else -> HomeFragment.newInstance()
+            else -> HomeFragment.newInstance(onFragmentInterActionListener)
         }
 
+        replaceFragment(fragment, tag)
+
+
+    }
+
+    private fun replaceFragment(fragment: Fragment, tag: String) {
         // show/hide fragment
         val transaction = supportFragmentManager.beginTransaction()
-
-        if (viewModel.lastActiveFragmentTag != null) {
-            val lastFragment =
-                supportFragmentManager.findFragmentByTag(viewModel.lastActiveFragmentTag)
-            if (lastFragment != null)
-                transaction.hide(lastFragment)
-        }
-
         when {
             !fragment.isAdded -> transaction.add(R.id.fragmentContainer, fragment, tag)
-            else -> transaction.show(fragment)
+            else -> transaction.replace(R.id.fragmentContainer, fragment)
         }
 
         transaction.commit()
-        viewModel.lastActiveFragmentTag = tag
-
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +70,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainer, HomeFragment.newInstance()).commit()
+            .add(R.id.fragmentContainer, HomeFragment.newInstance(onFragmentInterActionListener))
+            .commit()
 
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
 
