@@ -27,6 +27,7 @@ class AudioBookAdapter(private val onClickListener: (AudioBook) -> Unit) :
     override fun getItemCount() = data.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(data[position], onClickListener)
+
     fun setData(audioBooks: List<AudioBook>) {
         this.data = audioBooks
         notifyDataSetChanged()
