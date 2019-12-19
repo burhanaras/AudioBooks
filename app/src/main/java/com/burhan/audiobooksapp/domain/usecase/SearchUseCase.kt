@@ -1,47 +1,25 @@
 package com.burhan.audiobooksapp.domain.usecase
 
-import com.burhan.audiobooksapp.domain.dummydata.DummyData
+import android.content.Context
+import com.burhan.audiobooksapp.data.db.AppDatabase
+import com.burhan.audiobooksapp.data.mapper.mapToModel
 import com.burhan.audiobooksapp.domain.model.AudioBook
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Developed by tcbaras on 2019-12-09.
  */
-class SearchUseCase {
-
-    private val fireStoreDB = FirebaseFirestore.getInstance()
+class SearchUseCase(val context: Context) {
 
     fun search(query: String, callback: (result: List<AudioBook>) -> Unit) {
-        DummyData().provideTenAudioBooks {
-            val books = it.filter {
-                it.name.toLowerCase().contains(query.toLowerCase()) ||
-                        it.author.toLowerCase().contains(query.toLowerCase())
-            }
 
-            callback(books)
+        GlobalScope.launch(Dispatchers.IO) {
+            val queryWithWildCard = "%$query%"
+            val audioBookEntities = AppDatabase.getInstance(context).audioBookDao().search(queryWithWildCard)
+            val audioBooks = audioBookEntities.map { it.mapToModel() }
+            callback(audioBooks)
         }
-
-//
-//        val books = mutableListOf<AudioBook>()
-//        fireStoreDB.collection("Comedy").whereArrayContains("name", "Idiot").get()
-//            .addOnCompleteListener {
-//                if (it.isSuccessful) {
-//                    it.result?.let {
-//                        for (document in it) {
-//                            val book = AudioBook(
-//                                document["name"].toString(),
-//                                document["name"].toString(),
-//                                document["imageUrl"].toString(),
-//                                document["description"].toString(),
-//                                document["author"].toString(),
-//                                document["mp3"].toString()
-//                            )
-//                            books.add(book)
-//                        }
-//
-//                        callback(books)
-//                    }
-//                }
-//            }
     }
 }

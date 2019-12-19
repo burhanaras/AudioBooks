@@ -20,6 +20,10 @@ interface AudioBookDAO {
     @WorkerThread
     fun insertDbMetaData(dbMetaData: DbMetaData)
 
+    @Query("SELECT * FROM AudioBookEntity WHERE name LIKE :query OR author LIKE :query")
+    @WorkerThread
+    fun search(query: String): List<AudioBookEntity>
+
     @Query("SELECT * FROM AudioBookEntity WHERE category == :category LIMIT :limit")
     @WorkerThread
     fun getByCategory(category: String, limit: Int): List<AudioBookEntity>
