@@ -1,40 +1,27 @@
 package com.burhan.audiobooksapp.domain.usecase
 
+import android.content.Context
+import com.burhan.audiobooksapp.data.db.AppDatabase
+import com.burhan.audiobooksapp.data.mapper.mapToModel
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.domain.model.Category
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-class GetAudioBooksOfCategoryUseCase {
-
-    private val fireStoreDB = FirebaseFirestore.getInstance()
-
+class GetAudioBooksOfCategoryUseCase(val context: Context) {
 
     fun execute(
         category: Category,
         callback: (audioBooks: List<AudioBook>) -> Unit
     ) {
-        val audioBooks = mutableListOf<AudioBook>()
-        fireStoreDB.collection(category.id)
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    for (document in it.result!!) {
-                        audioBooks.add(
-                            AudioBook(
-                                id = document["name"].toString(),
-                                name = document["name"].toString(),
-                                imageUrl = document["imageUrl"].toString(),
-                                description = document["description"].toString(),
-                                author = document["author"].toString(),
-                                url = document["mp3"].toString(),
-                                category = category.name
-                            )
-                        )
-                    }
-                    callback(audioBooks)
-                } else {
-                    callback(listOf())
-                }
-            }
+        GlobalScope.launch(Dispatchers.IO) {
+            val audioBooksOfCategory =
+                AppDatabase.getInstance(context).audioBookDao().getAllByCategory(category.id)
+            val books = audioBooksOfCategory.map { it.mapToModel() }
+            callback(books)
+        }
+
+
     }
 }

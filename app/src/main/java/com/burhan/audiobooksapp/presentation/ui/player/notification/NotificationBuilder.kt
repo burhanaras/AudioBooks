@@ -69,6 +69,7 @@ class NotificationBuilder(private val context: Context) {
                             if (isPlaying) getPauseAction()
                             else getPlayAction()
                         )
+                        setOngoing(false)
                         setDeleteIntent(stopPendingIntent)
                         setContentIntent(getContentIntent())
                     }.build()
