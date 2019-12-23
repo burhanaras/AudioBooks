@@ -20,6 +20,7 @@ class SplashViewModel(app: Application) : AndroidViewModel(app) {
         val dbVersionCheckUseCase = DbVersionCheckUseCase(app)
         dbVersionCheckUseCase.checkIfDbNeedsToBeUpdated { needsToBeUpdated ->
             if (needsToBeUpdated) {
+                goToWalkThrough.postValue(true)
                 val downloadAllDataUseCase = DownloadAllDataUseCase(app)
                 downloadAllDataUseCase.execute {
                     dbVersionCheckUseCase.updateLocalDbVersion()

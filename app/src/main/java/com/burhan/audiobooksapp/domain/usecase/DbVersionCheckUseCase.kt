@@ -21,7 +21,10 @@ class DbVersionCheckUseCase(val context: Context) {
             if (dbMetaData != null) {
                 val localDbVersion = dbMetaData.dbVersion
                 getFireBaseDbVersion { fireBaseDbVersion ->
-                    callback(fireBaseDbVersion != localDbVersion)
+                    when (fireBaseDbVersion) {
+                        YouDontHaveToUpdateIt -> callback(false)
+                        else -> callback(fireBaseDbVersion != localDbVersion)
+                    }
                 }
             } else {
                 callback(true)
@@ -37,7 +40,7 @@ class DbVersionCheckUseCase(val context: Context) {
                         val fireBaseDbVersion = result.documents[0]["DbVersion"].toString()
                         callback(fireBaseDbVersion)
                     } else {
-                        callback("YouShouldDefinitelyUpdateIt")
+                        callback(YouDontHaveToUpdateIt)
                     }
 
                 }
@@ -52,5 +55,9 @@ class DbVersionCheckUseCase(val context: Context) {
                 AppDatabase.getInstance(context).audioBookDao().insertDbMetaData(dbMetaData)
             }
         }
+    }
+
+    companion object {
+        val YouDontHaveToUpdateIt = "YouDon'tHaveToUpdateIt"
     }
 }

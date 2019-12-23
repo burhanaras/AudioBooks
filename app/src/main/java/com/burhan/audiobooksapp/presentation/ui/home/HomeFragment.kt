@@ -42,6 +42,7 @@ class HomeFragment(private val onFragmentInterActionListener: (String) -> Unit) 
         setRecyclerView()
         setObservers()
         viewModel.loadData()
+
     }
 
     private fun initViewModels() =
@@ -54,6 +55,11 @@ class HomeFragment(private val onFragmentInterActionListener: (String) -> Unit) 
     }
 
     private fun setObservers() {
+        viewModel.loadingProgressVisibility.observe(this, Observer {
+            it?.let { isVisible ->
+                progressHome.visibility = if (isVisible) View.VISIBLE else View.GONE
+            }
+        })
         viewModel.data.observe(this, Observer { data ->
             adapter.setData(data)
         })

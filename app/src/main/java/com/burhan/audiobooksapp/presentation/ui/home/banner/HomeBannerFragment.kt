@@ -39,6 +39,7 @@ class HomeBannerFragment : Fragment() {
     private fun initUI() {
         adapter = HomeBannerSectionsAdapter(childFragmentManager)
         viewPagerHomeBanner.adapter = adapter
+        dotIndicatorBanner.dots(0, true)
 
         viewPagerHomeBanner.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
