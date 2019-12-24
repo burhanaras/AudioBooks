@@ -111,6 +111,7 @@ class PlayerService : LifecycleService() {
             }
         }
 
+        sendNowPlayingTimeInfoBroadcast()
         updateNotification()
 
         return START_STICKY

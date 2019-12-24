@@ -74,11 +74,6 @@ class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
         behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 Log.d("BURHANx", "slideOffset:$slideOffset")
-//                dotIndicator.animate().scaleX(slideOffset).scaleY(slideOffset).apply {
-//                    interpolator = LinearInterpolator()
-//                    duration = 1
-//                }.start()
-
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
