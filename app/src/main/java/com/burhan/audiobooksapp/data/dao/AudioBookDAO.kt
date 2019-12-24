@@ -24,6 +24,10 @@ interface AudioBookDAO {
     @WorkerThread
     fun search(query: String): List<AudioBookEntity>
 
+    @Query("SELECT * FROM AudioBookEntity WHERE id == :id")
+    @WorkerThread
+    fun getAudioBook(id: String): AudioBookEntity?
+
     @Query("SELECT * FROM AudioBookEntity WHERE category == :category LIMIT :limit")
     @WorkerThread
     fun getByCategory(category: String, limit: Int): List<AudioBookEntity>
