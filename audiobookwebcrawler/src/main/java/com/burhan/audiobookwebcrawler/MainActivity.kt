@@ -17,6 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 
 
 class MainActivity : AppCompatActivity() {
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     )
     private var URL =
-        "https://www.audible.com/search?keywords=&title=&author_author=&narrator=&publisher=&node=2226648011&pageSize=20&page=1"
+        "https://www.audible.com/newreleases?pf_rd_p=d37ffc99-e148-4dbc-a156-ec96fac4289f&pf_rd_r=50JF0K9NZC7H59FDCC85&ref=a_adblbests_t1_navTop_pl2cg1c0r1"
     private val urlPart0 =
         "https://www.audible.com/search?keywords=&title=&author_author=&narrator=&publisher=&node="
     private val urlPart1 = "&pageSize=20&page="
@@ -66,32 +67,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-
-//        GlobalScope.launch(Dispatchers.IO) {
-//            val batch = db.batch()
-//            val collection = db.collection("Categories2")
-//            var data: HashMap<String, Any> = HashMap<String, Any>()
-//            data["name"] = "Becoming Obama"
-//            data["author"] = "Michelle Obama"
-//            data["imageUrl"] = "bilmemne.jpg"
-//            data["mp3"] = "dotdotdot.mp3"
-//            data["description"] = "Uzun uzun bir description..."
-//            batch.set(collection.document(), data)
-//
-//            data = HashMap<String, Any>()
-//            data["name"] = "Becoming Obama 2"
-//            data["author"] = "Michelle Obama 2"
-//            data["imageUrl"] = "bilmemne.jpg 2"
-//            data["mp3"] = "dotdotdot.mp3"
-//            data["description"] = "Uzun uzun bir description.. 2."
-//            batch.set(collection.document(), data)
-//
-//            batch.commit()
-//        }
-
-
-        startCrawling()
-
+        // startCrawling()
+        startCrawlingBestSellers()
+        startCrawlingNewReleases()
 
         webView.webViewClient = WebViewClient()
         webView.loadUrl(URL)
@@ -100,6 +78,96 @@ class MainActivity : AppCompatActivity() {
                 .setAction("Action", null).show()
         }
 
+    }
+
+    private fun startCrawlingBestSellers() {
+        val bestSellers = mutableListOf<AudioBook>()
+        var url =
+            "https://www.audible.com/adblbestsellers?pf_rd_p=e1595489-c152-4314-a5d7-ed60b7e2ecc8&pf_rd_r=2JMZJFS5KRBMPREVM17C&ref=a_adblbests_c5_pageNum_1&page="
+
+        var counter = 0
+        (1..5).forEach { i ->
+            val fullUrl = url + i
+            doCrawlingNew(fullUrl) {
+                bestSellers.addAll(it)
+                counter++
+                if (counter == 5) {
+                    Log.d("BURHANx", "We have ${bestSellers.size} bestsellers.")
+                }
+            }
+        }
+    }
+
+    private fun startCrawlingNewReleases() {
+        val newReleases = mutableListOf<AudioBook>()
+        var url =
+            "https://www.audible.com/newreleases?pf_rd_p=4151a082-617e-4be0-b9af-ab85a5887dc2&pf_rd_r=ZGQ1MZ5E55G6X3CH3D5D&ref=a_newreleas_c4_pageNum_1&publication_date=20191219-20191226&feature_six_browse-bin=9178177011&feature_five_browse-bin=9178163011&submitted=1&page="
+
+        var counter = 0
+        (1..5).forEach { i ->
+            val fullUrl = url + i
+            doCrawlingNew(fullUrl) {
+                newReleases.addAll(it)
+                counter++
+                if (counter == 5) {
+                    Log.d("BURHANx", "We have ${newReleases.size} new releases.")
+                }
+            }
+        }
+    }
+
+    private fun doCrawlingNew(url: String, callback: (List<AudioBook>) -> Unit) {
+        GlobalScope.launch(Dispatchers.IO) {
+
+            val audioBooks = mutableListOf<AudioBook>()
+
+            var document = Jsoup.connect(url).get()
+            document?.let {
+                val mp3sOnPage = document.select("button[data-mp3]")
+                mp3sOnPage.forEachIndexed { index, element ->
+                    element.attr("data-mp3")?.let { mp3 ->
+                        //                        Log.d("MainActivity", "$index. $mp3")
+
+                        val parentNode =
+                            element.parentNode()?.parentNode()?.parentNode()?.parentNode()
+                        parentNode?.let { parentNode ->
+                            var text = (parentNode as Element).text()
+                            val by = text.indexOf(" By: ")
+                            val name = text.substring(0, by)
+                            text = text.substring(by + " By: ".length)
+                            val narratedBy = text.indexOf(" Narrated by: ")
+                            val author = text.substring(0, narratedBy).trim()
+                            text = text.substring(narratedBy + " Narrated by: ".length)
+                            val length = text.indexOf(" Length: ")
+                            val narrated = text.substring(0, length)
+                            text = text.substring(length + " Length: ".length)
+                            val overall = text.indexOf("Overall")
+                            val len = text.subSequence(0, overall)
+                            text = text.substring(overall + "Overall".length)
+                            val performance = text.indexOf(" Performance ")
+                            val overalll = text.substring(0, performance)
+                            text = text.substring(performance + " Performance ".length)
+                            val story = text.indexOf(" Story ")
+                            val perf = text.substring(0, story)
+                            text = text.substring(story + " Story ".length)
+                            val fiveStars = text.indexOf(" out of 5 stars ")
+                            text = text.substring(fiveStars + " out of 5 stars ".length)
+                            text = text.substring(text.indexOf(" ") + 1)
+                            var fourDots = text.indexOf(".... ")
+                            if (fourDots < 0) fourDots = text.length
+                            val description = text.substring(0, fourDots)
+                            val image = parentNode.getElementById("nojs_img_").attr("src")
+
+                            val audioBook = AudioBook(name, author, image, mp3, description)
+                            audioBooks.add(audioBook)
+                        }
+                    }
+                }
+
+                callback(audioBooks)
+
+            }
+        }
     }
 
     private fun startCrawling() {
@@ -111,10 +179,9 @@ class MainActivity : AppCompatActivity() {
                 for (page in 0..20) {
                     val bookCrawler = GlobalScope.async {
                         val url = urlPart0 + category.value + urlPart1 + page
-                        doCrawling(url)
+
                     }
-                    val bookz = bookCrawler.await()
-                    books.addAll(bookz)
+
                 }
 
 
@@ -138,76 +205,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun doCrawling(url: String): List<AudioBook> {
-        Log.d("RESULT", "-> $url")
-        var audiobooks = MutableList(size = 20) { AudioBook() }
-
-        val document = Jsoup.connect(url).get()
-        document?.let { document ->
-            val mp3sOnPage = document.select("button[data-mp3]")
-            mp3sOnPage.forEachIndexed { index, element ->
-                element.attr("data-mp3")?.let { mp3 ->
-                    Log.d("MainActivity", "$index. $mp3")
-                    audiobooks[index].mp3 = mp3
-                }
-            }
-
-
-            var counter = -1
-            val authors = document.select("a[href]")
-            authors.forEachIndexed { index, element ->
-                val href = element.attr("href")
-                if (href.startsWith("/author/") || href.contains("searchAuthor")) {
-                    if (href.endsWith("_1")) {
-                        counter += 1
-                        Log.d("MainActivity", "${counter}. ${element.text()}")
-                        audiobooks[counter].author = element.text()
-                    } else {
-                        Log.d("MainActivity", "${counter}. ${element.text()}")
-                        audiobooks[counter].author =
-                            audiobooks[counter].author.plus(", " + element.text())
-                    }
-                }
-            }
-
-            val images = document.select("img")
-            counter = 0
-            var lastImage = ""
-            images.forEach {
-                it?.attr("src")?.let { src ->
-                    if (src.endsWith("SL500_.jpg") && lastImage != src) {
-                        var name = it.attr("alt")
-                        name = name.take(name.indexOf("audiobook cover art")).trim()
-
-                        audiobooks[counter].name = name
-                        audiobooks[counter].imageUrl = src
-                        Log.d("MainActivity", "${counter++}. $src $name")
-                        lastImage = src
-                    }
-                }
-            }
-        }
-
-        var counter = 0
-        document.getElementsByClass("bc-popover-inner").forEach {
-            var isAlreadyFound = false
-            it.getElementsByTag("p").forEach {
-                if (it.text().length > 150 && !it.text().contains("bc-text")) {
-                    if (!isAlreadyFound) {
-                        audiobooks[counter].description = it.text()
-                        Log.d("MainActivity", "${counter++} ${it.text()}")
-                        isAlreadyFound = true
-                    }
-                }
-            }
-        }
-
-//        audiobooks.forEach {
-//            Log.d("BURHANx", it.toString())
-//        }
-
-        return audiobooks
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.

@@ -29,6 +29,7 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
     internal var nowPlayingTimeInfoSDO = MutableLiveData<NowPlayingTimeInfoSDO>()
     internal var nowPlayingPlayListSDO = MutableLiveData<PlayList>()
     internal var shareIntent = MutableLiveData<Intent>()
+    internal var favoriteIconRes: MutableLiveData<Int> = MutableLiveData()
 
     private var audioBook: AudioBook? = null
     private var playList: PlayList? = null
@@ -177,5 +178,20 @@ class NowPlayingActivityViewModel(private val app: Application) : AndroidViewMod
             putString(FirebaseAnalytics.Param.ITEM_NAME, audioBook.name)
         }
         fireBaseAnalytics.logEvent("Play", bundle)
+    }
+
+    fun toggleAddToFavorites() {
+        audioBook?.let {
+            it.isFavorite = !it.isFavorite
+
+            when {
+                it.isFavorite -> {
+                    favoriteIconRes.postValue(R.drawable.ic_favorite)
+                }
+                else -> {
+                    favoriteIconRes.postValue(R.drawable.ic_unfavorite)
+                }
+            }
+        }
     }
 }

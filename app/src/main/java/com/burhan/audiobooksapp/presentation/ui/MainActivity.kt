@@ -17,7 +17,7 @@ import com.burhan.audiobooksapp.presentation.ui.showall.ShowAllFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), HomeFragment.HomeFragmentInteractionListener {
 
     private lateinit var viewModel: MainActivityViewModel
 
@@ -27,17 +27,11 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-    private val onFragmentInterActionListener = object : (String) -> Unit {
-        override fun invoke(categoryId: String) {
-            replaceFragment(ShowAllFragment.newInstance(categoryId), ShowAllFragment.TAG)
-        }
-    }
-
     private fun loadFragment(itemId: Int) {
         val tag = itemId.toString()
         val fragment: Fragment = supportFragmentManager.findFragmentByTag(tag) ?: when (itemId) {
             R.id.navigation_home -> {
-                HomeFragment.newInstance(onFragmentInterActionListener)
+                HomeFragment.newInstance()
             }
             R.id.navigation_dashboard -> {
                 DashboardFragment.newInstance()
@@ -45,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             R.id.navigation_search -> {
                 SearchFragment.newInstance()
             }
-            else -> HomeFragment.newInstance(onFragmentInterActionListener)
+            else -> HomeFragment.newInstance()
         }
 
         replaceFragment(fragment, tag)
@@ -70,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainer, HomeFragment.newInstance(onFragmentInterActionListener))
+            .add(R.id.fragmentContainer, HomeFragment.newInstance())
             .commit()
 
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
@@ -100,6 +94,10 @@ class MainActivity : AppCompatActivity() {
                 else miniEqualizer.stopBars()
             }
         })
+    }
+
+    override fun onCategorySelected(categoryId: String) {
+        replaceFragment(ShowAllFragment.newInstance(categoryId), ShowAllFragment.TAG)
     }
 
     override fun onBackPressed() {

@@ -1,5 +1,6 @@
 package com.burhan.audiobooksapp.presentation.ui.home
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +16,10 @@ import com.burhan.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailA
 import com.burhan.audiobooksapp.presentation.ui.home.adapter.HomeCategoriesAdapter
 import kotlinx.android.synthetic.main.fragment_home.*
 
-class HomeFragment(private val onFragmentInterActionListener: (String) -> Unit) : Fragment() {
+class HomeFragment : Fragment() {
 
     private lateinit var viewModel: HomeFragmentViewModel
+    private var onFragmentInterActionListener: HomeFragmentInteractionListener? = null
     private val adapter = HomeCategoriesAdapter(object : (AudioBook) -> Unit {
         override fun invoke(audioBook: AudioBook) {
             startActivity(activity?.let { AudioBookDetailActivity.newIntent(it, audioBook) })
@@ -25,9 +27,16 @@ class HomeFragment(private val onFragmentInterActionListener: (String) -> Unit) 
     },
         object : (String) -> Unit {
             override fun invoke(categoryId: String) {
-                onFragmentInterActionListener(categoryId)
+                onFragmentInterActionListener?.onCategorySelected(categoryId)
             }
         })
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is HomeFragmentInteractionListener) {
+            onFragmentInterActionListener = context
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,10 +74,13 @@ class HomeFragment(private val onFragmentInterActionListener: (String) -> Unit) 
         })
     }
 
+    interface HomeFragmentInteractionListener {
+        fun onCategorySelected(categoryId: String)
+    }
+
     companion object {
         val TAG: String = HomeFragment::class.java.simpleName
-        fun newInstance(onFragmentInterActionListener: (String) -> Unit) =
-            HomeFragment(onFragmentInterActionListener)
+        fun newInstance() = HomeFragment()
     }
 
 }

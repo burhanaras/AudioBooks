@@ -70,6 +70,12 @@ class NowPlayingInfoFragment : Fragment() {
         })
         viewModel.shareIntent.observe(this, Observer { startActivity(it) })
 
+        viewModel.favoriteIconRes.observe(this, Observer {
+            it?.let { iconRes ->
+                ivAddToFavorites.setImageResource(iconRes)
+            }
+        })
+
         sharedViewModel.expandImage.observe(this, Observer {
             cardPlayerAudioBookImage.animate().scaleX(1.6f).scaleY(1.6f).translationY(120f).start()
         })
@@ -100,6 +106,9 @@ class NowPlayingInfoFragment : Fragment() {
 
         ivNowPlayingShare.setSingleClickListener {
             viewModel.onClickShare()
+        }
+        ivAddToFavorites.setSingleClickListener {
+            viewModel.toggleAddToFavorites()
         }
     }
 

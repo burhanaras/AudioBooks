@@ -14,5 +14,6 @@ data class AudioBook(
     var description: String,
     var author: String,
     var url: String = "https://samples.audible.com/bk/rand/006061/bk_rand_006061_sample.mp3",
-    var category: String = ""
+    var category: String = "",
+    var isFavorite: Boolean = false
 ) : Parcelable
