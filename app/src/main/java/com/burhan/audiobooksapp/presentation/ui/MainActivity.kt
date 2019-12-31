@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.burhan.audiobooksapp.R
-import com.burhan.audiobooksapp.presentation.ui.dashboard.DashboardFragment
+import com.burhan.audiobooksapp.presentation.ui.bestsellers.BestSellersFragment
 import com.burhan.audiobooksapp.presentation.ui.home.HomeFragment
 import com.burhan.audiobooksapp.presentation.ui.nowplaying.bottomsheet.NowPlayingBottomSheetFragment
 import com.burhan.audiobooksapp.presentation.ui.search.SearchFragment
@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity(), HomeFragment.HomeFragmentInteractionLi
             R.id.navigation_home -> {
                 HomeFragment.newInstance()
             }
-            R.id.navigation_dashboard -> {
-                DashboardFragment.newInstance()
+            R.id.navigation_bestsellers -> {
+                BestSellersFragment.newInstance()
             }
             R.id.navigation_search -> {
                 SearchFragment.newInstance()

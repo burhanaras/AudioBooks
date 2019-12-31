@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp.presentation.ui.dashboard
+package com.burhan.audiobooksapp.presentation.ui.bestsellers
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,13 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailActivity
-import com.burhan.audiobooksapp.presentation.ui.dashboard.adapter.DashBoardAdapter
+import com.burhan.audiobooksapp.presentation.ui.bestsellers.adapter.BestSellersAdapter
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 
-class DashboardFragment : Fragment() {
+class BestSellersFragment : Fragment() {
 
-    private lateinit var viewModel: DashboardFragmentViewModel
-    private val adapter = DashBoardAdapter(object : (AudioBook) -> Unit {
+    private lateinit var viewModel: BestSellersFragmentViewModel
+    private val adapter = BestSellersAdapter(object : (AudioBook) -> Unit {
         override fun invoke(audioBook: AudioBook) {
             startActivity(activity?.let { AudioBookDetailActivity.newIntent(it, audioBook) })
         }
@@ -33,7 +33,7 @@ class DashboardFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(DashboardFragmentViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(BestSellersFragmentViewModel::class.java)
         setRecyclerView()
         setObservers()
         viewModel.loadData()
@@ -54,8 +54,8 @@ class DashboardFragment : Fragment() {
 
 
     companion object {
-        val TAG: String = DashboardFragment::class.java.simpleName
-        fun newInstance() = DashboardFragment()
+        val TAG: String = BestSellersFragment::class.java.simpleName
+        fun newInstance() = BestSellersFragment()
     }
 
 }

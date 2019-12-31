@@ -12,13 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailActivity
-import com.burhan.audiobooksapp.presentation.ui.dashboard.adapter.DashBoardAdapter
+import com.burhan.audiobooksapp.presentation.ui.bestsellers.adapter.BestSellersAdapter
 import kotlinx.android.synthetic.main.fragment_search.*
 
 class SearchFragment : Fragment() {
 
     private lateinit var viewModel: SearchFragmentViewModel
-    private val adapter = DashBoardAdapter(object : (AudioBook) -> Unit {
+    private val adapter = BestSellersAdapter(object : (AudioBook) -> Unit {
         override fun invoke(audioBook: AudioBook) {
             startActivity(activity?.let { AudioBookDetailActivity.newIntent(it, audioBook) })
         }

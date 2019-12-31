@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.domain.model.Category
+import com.burhan.audiobooksapp.domain.usecase.GetBannerDataUseCase
 import com.burhan.audiobooksapp.domain.usecase.GetCategoriesOfHomeUseCase
 
 class HomeFragmentViewModel(app: Application) : AndroidViewModel(app) {
@@ -13,14 +14,16 @@ class HomeFragmentViewModel(app: Application) : AndroidViewModel(app) {
     internal val loadingProgressVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     private val getCategoriesOfHomeUseCase = GetCategoriesOfHomeUseCase(app)
+    private val getBannerDataUseCase = GetBannerDataUseCase(app)
 
     fun loadData() {
         loadingProgressVisibility.postValue(true)
         getCategoriesOfHomeUseCase.loadData { categoriesData ->
             data.postValue(categoriesData)
             loadingProgressVisibility.postValue(false)
-            if (categoriesData.isNotEmpty() && categoriesData.first().audioBooks.size > 6)
-                bannerData.postValue(categoriesData.first().audioBooks.take(6))
+        }
+        getBannerDataUseCase.loadData {
+            bannerData.postValue(it)
         }
     }
 }

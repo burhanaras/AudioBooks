@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp.presentation.ui.dashboard.adapter
+package com.burhan.audiobooksapp.presentation.ui.bestsellers.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +15,8 @@ import kotlinx.android.synthetic.main.item_audiobook_horizontal.view.*
 /**
  * Developed by tcbaras on 2019-12-18.
  */
-class DashBoardAdapter(private val onClickListener: (AudioBook) -> Unit) :
-    RecyclerView.Adapter<DashBoardAdapter.ViewHolder>() {
+class BestSellersAdapter(private val onClickListener: (AudioBook) -> Unit) :
+    RecyclerView.Adapter<BestSellersAdapter.ViewHolder>() {
 
     private var data: List<AudioBook> = mutableListOf()
 
@@ -44,7 +44,7 @@ class DashBoardAdapter(private val onClickListener: (AudioBook) -> Unit) :
 
         fun bind(audioBook: AudioBook, onClickListener: (AudioBook) -> Unit) {
             icon.loadFromUrl(audioBook.imageUrl)
-            name.text = audioBook.name
+            name.text = name.context.getString(R.string.dot_with_params, adapterPosition + 1, audioBook.name)
             author.text = audioBook.author
             description.text = audioBook.description
 

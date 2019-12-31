@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Audio Books</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_bestsellers">Best Sellers</string>
     <string name="title_search">Search</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="large_text">
@@ -102,4 +102,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search">Search</string>
+    <string name="dot_with_params">%1$s. %2$s</string>
 </resources>

@@ -13,13 +13,13 @@ import com.burhan.audiobooksapp.R
 import com.burhan.audiobooksapp.domain.model.AudioBook
 import com.burhan.audiobooksapp.domain.model.Category
 import com.burhan.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailActivity
-import com.burhan.audiobooksapp.presentation.ui.dashboard.adapter.DashBoardAdapter
+import com.burhan.audiobooksapp.presentation.ui.bestsellers.adapter.BestSellersAdapter
 import kotlinx.android.synthetic.main.fragment_show_all.*
 
 class ShowAllFragment : Fragment() {
 
     private lateinit var viewModel: ShowAllViewModel
-    private val adapter = DashBoardAdapter(object : (AudioBook) -> Unit {
+    private val adapter = BestSellersAdapter(object : (AudioBook) -> Unit {
         override fun invoke(audioBook: AudioBook) {
             startActivity(activity?.let { AudioBookDetailActivity.newIntent(it, audioBook) })
         }
