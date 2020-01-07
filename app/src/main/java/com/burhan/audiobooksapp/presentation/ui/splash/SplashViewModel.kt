@@ -13,14 +13,12 @@ import com.burhan.audiobooksapp.domain.usecase.DownloadAllDataUseCase
 class SplashViewModel(app: Application) : AndroidViewModel(app) {
 
     internal var goToHomeScreen: MutableLiveData<Boolean> = MutableLiveData()
-    internal var goToWalkThrough: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
 
         val dbVersionCheckUseCase = DbVersionCheckUseCase(app)
         dbVersionCheckUseCase.checkIfDbNeedsToBeUpdated { needsToBeUpdated ->
             if (needsToBeUpdated) {
-                goToWalkThrough.postValue(true)
                 val downloadAllDataUseCase = DownloadAllDataUseCase(app)
                 downloadAllDataUseCase.execute {
                     dbVersionCheckUseCase.updateLocalDbVersion()
@@ -30,7 +28,7 @@ class SplashViewModel(app: Application) : AndroidViewModel(app) {
                 Handler().postDelayed(
                     {
                         goToHomeScreen.postValue(true)
-                    }, 2000
+                    }, 3000
                 )
             }
         }
