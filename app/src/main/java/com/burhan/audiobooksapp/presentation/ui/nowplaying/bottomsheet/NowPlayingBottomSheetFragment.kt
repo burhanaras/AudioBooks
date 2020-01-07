@@ -69,18 +69,6 @@ class NowPlayingBottomSheetFragment : BottomSheetDialogFragment() {
                 dotIndicator.setSelected(position)
             }
         })
-
-        val behavior = BottomSheetBehavior.from(view?.parent as View)
-        behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                Log.d("BURHANx", "slideOffset:$slideOffset")
-            }
-
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                Log.d("BURHANx", "newState:$newState") //3: Expanded 4: Collapsed
-                sharedViewModel.bottomSheetStateChanged(newState)
-            }
-        })
     }
 
     companion object {
