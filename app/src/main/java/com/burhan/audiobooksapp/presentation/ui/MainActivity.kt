@@ -3,6 +3,8 @@ package com.burhan.audiobooksapp.presentation.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -98,6 +100,24 @@ class MainActivity : AppCompatActivity(), HomeFragment.HomeFragmentInteractionLi
 
     override fun onCategorySelected(categoryId: String) {
         replaceFragment(ShowAllFragment.newInstance(categoryId), ShowAllFragment.TAG)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.menu_scrolling, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            R.id.action_purchase -> {
+            }
+            R.id.action_search -> {
+                navView.selectedItemId = R.id.navigation_search
+            }
+        }
+        return true
     }
 
     override fun onBackPressed() {

@@ -1,9 +1,7 @@
 package com.burhan.audiobooksapp.presentation.ui.search
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -23,6 +21,11 @@ class SearchFragment : Fragment() {
             startActivity(activity?.let { AudioBookDetailActivity.newIntent(it, audioBook) })
         }
     })
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +59,11 @@ class SearchFragment : Fragment() {
             } ?: kotlin.run { adapter.setData(listOf()) }
 
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.removeItem(R.id.action_search)
     }
 
     companion object {
