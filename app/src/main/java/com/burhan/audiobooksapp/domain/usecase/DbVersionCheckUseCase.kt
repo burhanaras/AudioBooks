@@ -14,6 +14,20 @@ import kotlinx.coroutines.launch
 class DbVersionCheckUseCase(val context: Context) {
     private val fireStoreDb = FirebaseFirestore.getInstance()
 
+    fun checkIfDbIsEmpty(callback: (Boolean) -> Unit) {
+        GlobalScope.launch {
+            val count = AppDatabase.getInstance(context).audioBookDao().getAudioBookTotalcount()
+            when {
+                count > 0 -> {
+                    callback(true)
+                }
+                else -> {
+                    callback(false)
+                }
+            }
+        }
+    }
+
     fun checkIfDbNeedsToBeUpdated(callback: (needsToBeUpdated: Boolean) -> Unit) {
 
         GlobalScope.launch(Dispatchers.IO) {

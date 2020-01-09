@@ -51,4 +51,8 @@ interface AudioBookDAO {
     @Query("SELECT * FROM CategoryEntity")
     @WorkerThread
     fun getAllCategories(): List<CategoryEntity>
+
+    @Query("SELECT count(*) FROM AudioBookEntity")
+    @WorkerThread
+    fun getAudioBookTotalcount(): Int
 }
