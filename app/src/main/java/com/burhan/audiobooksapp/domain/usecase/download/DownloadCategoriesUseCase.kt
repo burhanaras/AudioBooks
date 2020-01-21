@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp.domain.usecase
+package com.burhan.audiobooksapp.domain.usecase.download
 
 import com.burhan.audiobooksapp.domain.model.Category
 import com.google.firebase.firestore.FirebaseFirestore

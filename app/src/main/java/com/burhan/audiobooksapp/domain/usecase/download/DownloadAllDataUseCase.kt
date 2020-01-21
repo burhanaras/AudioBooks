@@ -1,4 +1,4 @@
-package com.burhan.audiobooksapp.domain.usecase
+package com.burhan.audiobooksapp.domain.usecase.download
 
 import android.content.Context
 import com.burhan.audiobooksapp.data.db.AppDatabase
@@ -32,5 +32,9 @@ class DownloadAllDataUseCase(
                 }
             }
         }
+    }
+
+    fun executeFromJson(callback: () -> Unit) {
+
     }
 }

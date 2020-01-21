@@ -10,5 +10,8 @@ import androidx.room.PrimaryKey
 @Entity
 data class DbMetaData(
     @PrimaryKey var id: String = "1",
-    @ColumnInfo var dbVersion: String
+    @ColumnInfo var dbVersion: String,
+    @ColumnInfo var fullAudioBooksVersion: String,
+    @ColumnInfo var sampleAudioBooksVersion: String,
+    @ColumnInfo var newSampleAudioBooksVersion: String
 )

@@ -5,7 +5,7 @@ import android.os.Handler
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.burhan.audiobooksapp.domain.usecase.DbVersionCheckUseCase
-import com.burhan.audiobooksapp.domain.usecase.DownloadAllDataUseCase
+import com.burhan.audiobooksapp.domain.usecase.download.DownloadAllDataUseCase
 
 /**
  * Developed by tcbaras on 2019-12-16.
@@ -17,9 +17,10 @@ class SplashViewModel(app: Application) : AndroidViewModel(app) {
     init {
 
         val dbVersionCheckUseCase = DbVersionCheckUseCase(app)
-        dbVersionCheckUseCase.checkIfDbNeedsToBeUpdated { needsToBeUpdated ->
-            if (needsToBeUpdated) {
-                val downloadAllDataUseCase = DownloadAllDataUseCase(app)
+        dbVersionCheckUseCase.checkIfDbIsEmpty { dbIsEmpty ->
+            if (dbIsEmpty) {
+                val downloadAllDataUseCase =
+                    DownloadAllDataUseCase(app)
                 downloadAllDataUseCase.execute {
                     dbVersionCheckUseCase.updateLocalDbVersion()
                     goToHomeScreen.postValue(true)

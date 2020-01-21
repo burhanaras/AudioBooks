@@ -28,50 +28,69 @@ class DbVersionCheckUseCase(val context: Context) {
         }
     }
 
-    fun checkIfDbNeedsToBeUpdated(callback: (needsToBeUpdated: Boolean) -> Unit) {
+    fun checkIfDbNeedsToBeUpdated(
+        callback: (
+            fullAudioBooksNeedUpdate: Boolean,
+            sampleAudioBooksNeedUpdate: Boolean,
+            newSampleAudioBooksNeedUpdate: Boolean
+        ) -> Unit
+    ) {
 
         GlobalScope.launch(Dispatchers.IO) {
             val dbMetaData = AppDatabase.getInstance(context).audioBookDao().getDbMetaData()
             if (dbMetaData != null) {
-                val localDbVersion = dbMetaData.dbVersion
-                getFireBaseDbVersion { fireBaseDbVersion ->
-                    when (fireBaseDbVersion) {
-                        YouDontHaveToUpdateIt -> callback(false)
-                        else -> callback(fireBaseDbVersion != localDbVersion)
-                    }
+                getFireBaseDbVersion { fullAudioBooksDbVersion, sampleAudioBooksDbVersion, newSampleAudioBooksDbVersion ->
+                    callback(
+                        fullAudioBooksDbVersion == dbMetaData.fullAudioBooksVersion,
+                        sampleAudioBooksDbVersion == dbMetaData.sampleAudioBooksVersion,
+                        newSampleAudioBooksDbVersion == dbMetaData.newSampleAudioBooksVersion
+                    )
                 }
             } else {
-                callback(true)
+                callback(true, true, true)
             }
         }
     }
 
-    private fun getFireBaseDbVersion(callback: (fireBaseDbVersion: String) -> Unit) {
+    private fun getFireBaseDbVersion(
+        callback: (
+            fullAudioBooksDbVersion: String,
+            sampleAudioBooksDbVersion: String,
+            newSampleAudioBooksDbVersion: String
+        ) -> Unit
+    ) {
         fireStoreDb.collection("DbMetaData").get().addOnCompleteListener {
             if (it.isSuccessful) {
                 it.result?.let { result ->
                     if (result.documents.isNotEmpty()) {
-                        val fireBaseDbVersion = result.documents[0]["DbVersion"].toString()
-                        callback(fireBaseDbVersion)
-                    } else {
-                        callback(YouDontHaveToUpdateIt)
+                        val fullAudioBooksDbVersion =
+                            result.documents[0]["FullAudioBooksDbVersion"].toString()
+                        val sampleAudioBooksDbVersion =
+                            result.documents[0]["SampleAudioBooksDbVersion"].toString()
+                        val newSampleAudioBooksDbVersion =
+                            result.documents[0]["NewSampleAudioBooksDbVersion"].toString()
+                        callback(
+                            fullAudioBooksDbVersion,
+                            sampleAudioBooksDbVersion,
+                            newSampleAudioBooksDbVersion
+                        )
                     }
-
                 }
             }
         }
     }
 
     fun updateLocalDbVersion() {
-        getFireBaseDbVersion {
+        getFireBaseDbVersion { fullAudioBooksDbVersion, sampleAudioBooksDbVersion, newSampleAudioBooksDbVersion ->
             GlobalScope.launch(Dispatchers.IO) {
-                val dbMetaData = DbMetaData(dbVersion = it)
+                val dbMetaData = DbMetaData(
+                    dbVersion = "",
+                    fullAudioBooksVersion = fullAudioBooksDbVersion,
+                    sampleAudioBooksVersion = sampleAudioBooksDbVersion,
+                    newSampleAudioBooksVersion = newSampleAudioBooksDbVersion
+                )
                 AppDatabase.getInstance(context).audioBookDao().insertDbMetaData(dbMetaData)
             }
         }
-    }
-
-    companion object {
-        val YouDontHaveToUpdateIt = "YouDon'tHaveToUpdateIt"
     }
 }
