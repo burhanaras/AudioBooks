@@ -17,7 +17,7 @@
                 android:gravity="center"
                 android:padding="20dp">
 
-            <com.burhan.audiobooksapp.presentation.core.widget.DotIndicator
+            <com.listenhub.audiobooksapp.presentation.core.widget.DotIndicator
                     android:id="@+id/dotIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

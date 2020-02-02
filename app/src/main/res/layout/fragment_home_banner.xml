@@ -3,14 +3,14 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presentation.ui.home.banner.HomeBannerFragment">
+        tools:context=".presentation.ui.home.banner.BannerFragment">
 
     <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPagerHomeBanner"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    <com.burhan.audiobooksapp.presentation.core.widget.DotIndicator
+    <com.listenhub.audiobooksapp.presentation.core.widget.DotIndicator
             android:id="@+id/dotIndicatorBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

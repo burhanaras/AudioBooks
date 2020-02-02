@@ -39,7 +39,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/fragmentContainer"
             app:layout_constraintEnd_toEndOf="@+id/navView">
 
-        <com.burhan.audiobooksapp.presentation.core.widget.MiniEqualizerView
+        <com.listenhub.audiobooksapp.presentation.core.widget.MiniEqualizerView
                 android:id="@+id/miniEqualizer"
                 android:layout_width="30dp"
                 android:layout_height="30dp"

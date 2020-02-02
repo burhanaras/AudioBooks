@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.burhan.audiobooksapp">
+        package="com.listenhub.audiobooksapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-            android:name=".presentation.App"
+            android:name="com.listenhub.audiobooksapp.presentation.App"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
@@ -15,7 +15,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
 
-        <activity android:name=".presentation.ui.splash.SplashActivity">
+        <activity android:name="com.listenhub.audiobooksapp.presentation.ui.splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -25,18 +25,18 @@
         </activity>
 
         <service
-                android:name=".presentation.ui.player.service.PlayerService"
+                android:name="com.listenhub.audiobooksapp.presentation.ui.player.service.PlayerService"
                 android:enabled="true"
                 android:exported="false" />
 
         <activity
-                android:name=".presentation.ui.player.NowPlayingActivity"
+                android:name="com.listenhub.audiobooksapp.presentation.ui.player.NowPlayingActivity"
                 android:launchMode="singleTop" />
         <activity
-                android:name=".presentation.ui.audiobookdetail.AudioBookDetailActivity"
+                android:name="com.listenhub.audiobooksapp.presentation.ui.audiobookdetail.AudioBookDetailActivity"
                 android:theme="@style/AppTheme.NoActionBar" />
         <activity
-                android:name=".presentation.ui.MainActivity"
+                android:name="com.listenhub.audiobooksapp.presentation.ui.MainActivity"
                 android:configChanges="orientation|keyboardHidden"
                 android:label="@string/app_name">
 

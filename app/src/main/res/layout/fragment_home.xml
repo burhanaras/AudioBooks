@@ -5,7 +5,7 @@
         android:layout_height="match_parent"
         android:background="@android:color/white"
         android:orientation="vertical"
-        tools:context=".presentation.ui.home.HomeFragment">
+        tools:context=".presentation.ui.samples.SamplesFragment">
 
     <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -21,7 +21,7 @@
 
             <fragment
                     android:id="@+id/homeBannerFragment"
-                    android:name="com.burhan.audiobooksapp.presentation.ui.home.banner.HomeBannerFragment"
+                    android:name="com.listenhub.audiobooksapp.presentation.ui.home.banner.BannerFragment"
                     android:layout_width="match_parent"
                     android:layout_height="200dp" />
 

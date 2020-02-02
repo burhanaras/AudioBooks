@@ -1,1 +1,1 @@
-include ':app', ':webcrawler'
+include ':app', ':webcrawler', ':media', ':domaindata'
